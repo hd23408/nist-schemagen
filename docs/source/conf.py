@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('/Users/maia/dev-nist/schemaGen/'))
+#sys.path.insert(0, os.path.abspath('/Users/maia/dev-nist/schemaGen/'))
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -37,7 +38,8 @@ extensions = [
 autodoc_default_options = {
         "members": True,
         "undoc-members": True,
-        "private-members": True
+        "private-members": True,
+        "member-order": 'bysource'
 }
 
 # Add any paths that contain templates here, relative to this directory.

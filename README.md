@@ -24,3 +24,7 @@ Run all tests from the main project directory:
 `python -m unittest`
 Run a single test, from the main project directory:
 `python -m unittest -k test__build_schema`
+
+
+A pylint file is included from the Google style guide (https://google.github.io/styleguide/pyguide.html )
+This code doesn't comply with everything, but it tries to come fairly close.

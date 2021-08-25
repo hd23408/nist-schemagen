@@ -14,7 +14,7 @@ are read in, if desired.
 
 # These are the two schema files
 PARAMETERS_SCHEMA = pathlib.Path(__file__).parent.joinpath("json_schemae/parameters.json.schema")
-DATATYPES_SCHEMA = pathlib.Path(__file__).parent.joinpath("json_schemae/datatypes.json.schema")
+DATATYPES_SCHEMA = pathlib.Path(__file__).parent.joinpath("json_schemae/column_datatypes.json.schema")
 
 def validate_schema(input_file, is_parameters):
     json_schema = None
