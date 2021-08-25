@@ -1,8 +1,8 @@
 TODO
 __pycache__
-parameters.json
-column_datatypes.json
 .DS_store
 .env
 .project
 *.swp
+output
+docs/build
