@@ -69,21 +69,21 @@ class SchemaGenerator:
     a different SchemaGenerator should be used for each input file.)
 
     Error-handling: This method will trap and log exceptions directly,
-    and return a simple bool indicating success or failure. To configure
-    how this method logs, use the ...
+    and return a simple bool indicating success or failure.
 
     :param input_csv_file: the CSV file that should be examined to determine the
-    schema
+schema
     :type input_csv_file: str
     :param max_values_for_categorical: columns with fewer than this many values
-        will be considered categorical
+will be considered categorical
     :type max_values_for_categorical: number
     :param include_na: whether or not to include `NaN` as a value for
-        categorical fields
+categorical fields
     :type include_na: bool
 
     :return: whether or not the loading was successful
     :rtype: bool
+
     """
 
     # Since we're reading in a new input file, first we should
@@ -144,11 +144,11 @@ class SchemaGenerator:
     JSON schema.
 
     :param output_directory: (optional) the directory into which to output the
-    file. If not specified, will write out to the current working directory.
+file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
     :return: full filepath to the output file, or None if the output was
-    unsuccessful.
+unsuccessful.
     :rtype: str
     """
 
@@ -178,11 +178,11 @@ class SchemaGenerator:
     that can be set to true or false.
 
     :param output_directory: (optional) the directory into which to output the
-    file. If not specified, will write out to the current working directory.
+file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
     :return: full filepath to the output file, or None if the output was
-    unsuccessful.
+unsuccessful.
     :rtype: str
     """
 
@@ -220,14 +220,12 @@ class SchemaGenerator:
 
   def _load_csv(self, input_csv_file):
     """
-    Loads in the CSV file as a pandas DataFrame
+    Loads in the CSV file as a pandas DataFrame.
 
-    :param input_csv_file: the CSV file that should be examined to determine
-    the schema
+    :param input_csv_file: the CSV file that should be examined to determine the schema # Docs on the same line make sphinx happy... pylint: disable=line-too-long
     :type input_csv_file: str
 
-    :return: The input CSV file as a dataframe (will raise exceptions if it
-    encounters them)
+    :return: The input CSV file as a dataframe (will raise exceptions if it encounters them) # Docs on the same line make sphinx happy... pylint: disable=line-too-long
     :rtype: pandas.DataFrame
     """
 

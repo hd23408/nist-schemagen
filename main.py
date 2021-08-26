@@ -18,6 +18,10 @@ import schemagen
 import validate
 import json
 
+# Configure the logger to output just warnings and above; logs will
+# go to stderr by default
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "WARNING"))
+
 def generate_schema(input_file, max_categorical, include_na):
   # Create a SchemaGenerator
   local_schema_generator = schemagen.SchemaGenerator()
@@ -79,10 +83,7 @@ def review_schema(param_schema_generator):
     # TODO: Allow reviewing of the input
 
 if __name__ == "__main__":
-  # validate.py executed as script
-  # Configure the logger to output everything; logs will
-  # go to stderr by default
-  logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+  # main.py executed as script
 
   # Set up the argument parser for this helper script
   parser = argparse.ArgumentParser(

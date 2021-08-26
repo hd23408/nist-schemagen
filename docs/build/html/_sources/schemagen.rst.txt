@@ -4,10 +4,10 @@ schemagen package
 Submodules
 ----------
 
-schemagen.SchemaGenerator module
---------------------------------
+schemagen.schemagen module
+--------------------------
 
-.. automodule:: schemagen.SchemaGenerator
+.. automodule:: schemagen.schemagen
    :members:
    :undoc-members:
    :show-inheritance:
