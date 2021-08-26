@@ -1,4 +1,3 @@
-
 """
 This script can be used to run a JSON validator on a generated
 schema file or column_datatypes file. This can be useful if the
