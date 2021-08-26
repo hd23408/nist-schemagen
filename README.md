@@ -165,6 +165,12 @@ viewed by running `python main.py -h`. They are:
 
 * `-o, --output_dir`: an output directory into which the output files should be
 written (e.g. `python main.py -o /path/to/output /path/to/input.csv`)
+* `-m, --max_categorical`: the maximum number of values a column can have
+to be considered categorical. Columns with more than this number of values will
+be treated as ranges. Defaults to 25.
+* `-i, --include_na`: Whether or not to include "NaN" as one of the categorical
+values, when there are some rows that don't have a value for that column. Defaults
+to False.
 
 
 ### Using as a Module

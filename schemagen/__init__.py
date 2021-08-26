@@ -14,7 +14,8 @@ methods.
   schema_generator.read_and_parse_csv(input_file)
   parameters_json = schema_generator.get_parameters_json()
 """
-# Import the SchemaGenerator class from the file to make it
-# easier for importing code to use it
+# Import things from the file to make it easier for importing code to use it
 
 from .schemagen import SchemaGenerator
+from .schemagen import DEFAULT_MAX_VALUES_FOR_CATEGORICAL
+from .schemagen import DEFAULT_INCLUDE_NA

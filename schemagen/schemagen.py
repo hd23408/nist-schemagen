@@ -1,4 +1,4 @@
-"""This is module for the SchemaGenerator class, which is used
+"""This is a module for the SchemaGenerator class, which is used
 to create schema files based on an existing CSV file.
 
 The schema generator takes as input a comma-separated datafile.
@@ -58,7 +58,9 @@ class SchemaGenerator:
     # Set up a logger for this module
     self.log = logging.getLogger(__name__)
 
-  def read_and_parse_csv(self, input_csv_file):
+  def read_and_parse_csv(self, input_csv_file,
+            max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
+            include_na = DEFAULT_INCLUDE_NA):
     """This method loads in a new input CSV file and attempts to infer
     a schema from it. If the SchemaGenerator has already been used to
     generate a schema from a different input file, this method will clear
@@ -73,14 +75,16 @@ class SchemaGenerator:
     :param input_csv_file: the CSV file that should be examined to determine the
     schema
     :type input_csv_file: str
+    :param max_values_for_categorical: columns with fewer than this many values
+        will be considered categorical
+    :type max_values_for_categorical: number
+    :param include_na: whether or not to include `NaN` as a value for
+        categorical fields
+    :type include_na: bool
 
     :return: whether or not the loading was successful
     :rtype: bool
     """
-
-    #TODO:
-    # - how to configure logging
-    # - allow specifying max values for categorical
 
     # Since we're reading in a new input file, first we should
     # re-initialize the output schema that we'll be generating
@@ -106,7 +110,8 @@ class SchemaGenerator:
     try:
       # Do the processing needed to generate the schema
       (self.output_schema, self.output_datatypes) = \
-            self._build_schema(self.input_data_as_dataframe)
+            self._build_schema(self.input_data_as_dataframe,
+                max_values_for_categorical, include_na)
     except: # Logging the full exception... pylint: disable=bare-except
       # Re-clear these variables to make sure nothing is in a half-loaded state
       self._clear_class_variables()
@@ -142,21 +147,27 @@ class SchemaGenerator:
     file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
-    :return: full filepath to the output file
+    :return: full filepath to the output file, or None if the output was
+    unsuccessful.
     :rtype: str
     """
-
-    #TODO:
-    # - try/catch writing out the file
 
     output_file = os.path.join(output_directory, NAME_FOR_PARAMETERS_FILE)
 
     self.log.info("Writing output parameters file %s...", output_file)
 
-    with open(output_file, "w", encoding="utf-8") as write_file:
-      json.dump(self.output_schema, write_file, indent=2)
-
-    self.log.info("Done writing output parameters file.")
+    try:
+      with open(output_file, "w", encoding="utf-8") as write_file:
+        json.dump(self.output_schema, write_file, indent=2)
+    except FileNotFoundError:
+      self.log.error("Can't write to '%s'. Does the parent directory exist?",
+                output_file)
+      output_file = None
+    except: # Logging the full exception... pylint: disable=bare-except
+      self.log.exception("Caught error when trying to write parameters file:" )
+      output_file = None
+    else:
+      self.log.info("Done writing output parameters file.")
     return output_file
 
   def output_column_datatypes_json(self, output_directory = "."):
@@ -170,21 +181,29 @@ class SchemaGenerator:
     file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
-    :return: full filepath to the output file
+    :return: full filepath to the output file, or None if the output was
+    unsuccessful.
     :rtype: str
     """
 
     #TODO:
     # - what is the skipinitialspace property?
-    # - try/catch writing out the file
 
     output_file = os.path.join(output_directory, NAME_FOR_DATATYPES_FILE)
     self.log.info("Writing output column datatypes file %s...", output_file)
 
-    with open(output_file, "w", encoding="utf-8") as write_file:
-      json.dump(self.output_datatypes, write_file, indent=2)
-
-    self.log.info("Done writing output column datatypes file.")
+    try:
+      with open(output_file, "w", encoding="utf-8") as write_file:
+        json.dump(self.output_datatypes, write_file, indent=2)
+    except FileNotFoundError:
+      self.log.error("Can't write to '%s'. Does the parent directory exist?",
+                output_file)
+      output_file = None
+    except: # Logging the full exception... pylint: disable=bare-except
+      self.log.exception("Caught error when trying to write column_datatypes:")
+      output_file = None
+    else:
+      self.log.info("Done writing output column datatypes file.")
 
     return output_file
 
@@ -224,27 +243,27 @@ class SchemaGenerator:
     except pd.errors.ParserError as err:
       # This is likely to be a common error, so check for it explicitly
       self.log.error("Using input file: '%s', \
-          'pandas.read_csv()' was unable to parse the input file \
-          as a CSV. Please confirm that it contains valid comma-separated \
-          values.", input_csv_file)
+'pandas.read_csv()' was unable to parse the input file \
+as a CSV. Please confirm that it contains valid comma-separated \
+values.", input_csv_file)
       raise err
     except FileNotFoundError as err:
       # This is likely to be a common error, so check for it explicitly
       self.log.error("Using input file: '%s', \
-          the file was not found. Please confirm the specified \
-          path, or use a full path instead of a relative path.", input_csv_file)
+the file was not found. Please confirm the specified \
+path, or use a full path instead of a relative path.", input_csv_file)
       raise err
     except pd.errors.EmptyDataError as err:
       # This is likely to be a common error, so check for it explicitly
       self.log.error("\nUsing input file: '%s', \
-          The file appears to be empty. Please confirm the path.",
+The file appears to be empty. Please confirm the path.",
           input_csv_file)
       raise err
     except BaseException as err:
       # An error was thrown that we weren't expecting; log and rethrow to caller
       self.log.error("\nUsing input file: '%s', \
-          The system received an unexpected error when trying to \
-          parse the input file using 'pandas.read_csv()'.", input_csv_file)
+The system received an unexpected error when trying to \
+parse the input file using 'pandas.read_csv()'.", input_csv_file)
       raise err
 
     self.log.info("Successfully read CSV file.")
@@ -322,19 +341,23 @@ class SchemaGenerator:
       if len(values) <= max_values_for_categorical:
         # Treat as a categorical value and output a list of unique values
         col_schema["kind"] = "categorical"
-        try:
-          values.sort()
-        except: # Logging the full exception... pylint: disable=bare-except
-          self.log.exception("Encountered an error when trying to sort the \
-                values. Will include them without sorting.")
+
+        # If we're including NA, it's frequently not going to be sortable,
+        # so don't even try
+        if not include_na:
+          try:
+            values.sort()
+          except: # Logging the full exception... pylint: disable=bare-except
+            self.log.exception("Encountered an error when trying to sort the \
+values. Will include them without sorting.")
         col_schema["values"] = values.tolist()
 
       else:
         if col_schema["dtype"] == "str":
           self.log.warning("\nNot using values for column '%s' \
-            because it is non-numeric and there are more than %s \
-            unique values for it. This column will be labeled as an \
-            ID-type string, and values will not be included.",
+because it is non-numeric and there are more than %s \
+unique values for it. This column will be labeled as an \
+ID-type string, and values will not be included.",
             str(column), str(max_values_for_categorical))
           col_schema["kind"] = "id"
         elif col_schema["dtype"] == "date":

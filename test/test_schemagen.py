@@ -15,6 +15,10 @@ import logging
 import os
 import pandas
 import schemagen
+import filecmp
+
+# Suppress log messages so they don't confuse readers of the test output
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "CRITICAL"))
 
 # Sample files for testing
 INVALID_INPUT_DATA_FILE = str(pathlib.Path(__file__).parent.
@@ -25,6 +29,13 @@ VALID_INPUT_DATA_FILE = str(pathlib.Path(__file__).parent.
     joinpath("files_for_testing/valid_input_data.csv"))
 VALID_SCHEMA_FILE = str(pathlib.Path(__file__).parent.
     joinpath("files_for_testing/parameters.json"))
+
+TEST_OUTPUT_DIRECTORY = str(pathlib.Path(__file__).parent.
+    joinpath("test_output_files"))
+VALID_OUTPUT_PARAMETERS_FILE = str(pathlib.Path(__file__).parent.
+    joinpath("files_for_testing/writing_tests/parameters.json"))
+VALID_OUTPUT_DATATYPES_FILE = str(pathlib.Path(__file__).parent.
+    joinpath("files_for_testing/writing_tests/column_datatypes.json"))
 
 # Test dataframes to convert to a schema. This should contain
 # an assortment of the different types that we expect to parse:
@@ -67,9 +78,6 @@ VALID_TEST_COLUMN_DATATYPES = {
  }
 }
 
-# Suppress log messages so they don't confuse readers of the test output
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "CRITICAL"))
-
 class TestSchemaGenerator(unittest.TestCase):
   """Test class for the schemagen.SchemaGenerator class.
   """
@@ -101,6 +109,58 @@ class TestSchemaGenerator(unittest.TestCase):
     # Confirm that a valid CSV loads successfully
     result = schema_generator.read_and_parse_csv(VALID_INPUT_DATA_FILE)
     self.assertIs(result, True)
+
+  def test_output_parameters(self):
+    """
+    Test outputting of the parameters file.
+    """
+    schema_generator = schemagen.SchemaGenerator()
+
+    # Set the output schema to a known good values;
+    # here we're JUST testing the writing out of the file
+    schema_generator.output_schema = VALID_TEST_SCHEMA
+
+    # Test writing out to a non-existent directory
+    retval = schema_generator.output_parameters_json(output_directory="foo")
+    self.assertEqual(retval, None)
+
+    # Test success path
+    retval = None
+    retval = schema_generator.output_parameters_json(output_directory=
+        TEST_OUTPUT_DIRECTORY)
+    self.assertTrue(filecmp.cmp(str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
+        joinpath("parameters.json")), VALID_OUTPUT_PARAMETERS_FILE),
+        msg = "test_output_files/parameters.json does not match " +
+        VALID_OUTPUT_PARAMETERS_FILE)
+
+    self.assertEqual(retval, str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
+        joinpath("parameters.json")))
+
+  def test_output_datatypes(self):
+    """
+    Test outputting of the column_datatypes file.
+    """
+    schema_generator = schemagen.SchemaGenerator()
+
+    # Set the output datatypes to a known good values;
+    # here we're JUST testing the writing out of the file
+    schema_generator.output_datatypes = VALID_TEST_COLUMN_DATATYPES
+
+    # Test writing out to a non-existent directory
+    retval = schema_generator.output_parameters_json(output_directory="foo")
+    self.assertEqual(retval, None)
+
+    # Test success path
+    retval = None
+    retval = schema_generator.output_column_datatypes_json(output_directory=
+        TEST_OUTPUT_DIRECTORY)
+    self.assertTrue(filecmp.cmp(str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
+        joinpath("column_datatypes.json")), VALID_OUTPUT_DATATYPES_FILE),
+        msg = "test_output_files/column_datatypes.json does not match " +
+        VALID_OUTPUT_DATATYPES_FILE)
+
+    self.assertEqual(retval, str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
+        joinpath("column_datatypes.json")))
 
   def test__load_csv_succeeds(self):
     """
