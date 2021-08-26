@@ -72,6 +72,7 @@ def output_schema(param_schema_generator, output_dir):
   print(output_column_datatypes_json)
 
 def review_schema(param_schema_generator):
+  # TODO: Fully implement
   schema = param_schema_generator.get_parameters_json()
   for column in schema["schema"]:
     print("--------")
@@ -107,9 +108,10 @@ if __name__ == "__main__":
     str(schemagen.DEFAULT_INCLUDE_NA),
     default=schemagen.DEFAULT_INCLUDE_NA, action="store_true")
 
-  parser.add_argument("-r", "--review_schema", help=
-    "Whether or not to review each column individually as part of this \
-    script. Defaults to False", default=False, action="store_true")
+  # TODO: Fully implement
+  # parser.add_argument("-r", "--review_schema", help=
+  #   "Whether or not to review each column individually as part of this \
+  #   script. Defaults to False", default=False, action="store_true")
 
   # The argument parser will error out if the input file isn't specified
   args = parser.parse_args()
@@ -124,8 +126,9 @@ if __name__ == "__main__":
     sys.exit()
 
   # If desired, allow the user to review the schema column by column
-  if args.review_schema:
-    review_schema(schema_generator)
+  # TODO: Fully implement
+  # if args.review_schema:
+  #   review_schema(schema_generator)
 
   # Output the schema files
   output_schema(schema_generator, args.outputdir)
