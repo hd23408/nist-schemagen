@@ -47,7 +47,7 @@ These files will be formatted according to the JSON schemae provided in this
 tool's `json_schemae` directory, and can be validated using the validation tool
 provided (see below).
 
-###Example Output:
+### Example Output:
 
 These examples were created from an input file that looked something like like this:
 
@@ -175,8 +175,8 @@ to False.
 
 ### Using as a Module
 The tool can also be used as a module within a larger program. For details,
-please refer to the documentation available [here](https://github.com/hd23408/nist-schemagen/blob/master/docs/build/html/schemagen.html).
-(TODO: Put this documentation somewhere more accessible!)
+please refer to the documentation available [here](https://hd23408.github.io/nist-schemagen/html/schemagen.html)
+(TODO: Put this documentation somewhere that will allow it to use the sphinx theme)
 
 In brief:
 
