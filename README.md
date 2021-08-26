@@ -155,7 +155,7 @@ To run the tool from a command line, do the following:
 `python main.py /path/to/input.csv`
 
 3. After the tool has processed your input CSV file, two files will be written
-out to the `./output` directory under the root directory:
+out directly in the root directory:
 	* `parameters.json` 
 	* `column_datatypes.json`
 
