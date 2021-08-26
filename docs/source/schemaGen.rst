@@ -1,13 +1,13 @@
-schemaGen package
+schemagen package
 =================
 
 Submodules
 ----------
 
-schemaGen.SchemaGenerator module
+schemagen.SchemaGenerator module
 --------------------------------
 
-.. automodule:: schemaGen.SchemaGenerator
+.. automodule:: schemagen.SchemaGenerator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ schemaGen.SchemaGenerator module
 Module contents
 ---------------
 
-.. automodule:: schemaGen
+.. automodule:: schemagen
    :members:
    :undoc-members:
    :show-inheritance:

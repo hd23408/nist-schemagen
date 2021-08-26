@@ -1,10 +1,7 @@
-schemaGen
+schemagen
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   main
-   schemaGen
-   test
-   validate
+   schemagen

@@ -1,3 +1,3 @@
 make clean
-sphinx-apidoc -f -o source ../
+sphinx-apidoc -f -o source ../schemagen
 make html
