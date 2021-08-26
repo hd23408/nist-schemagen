@@ -175,7 +175,10 @@ to False.
 
 ### Using as a Module
 The tool can also be used as a module within a larger program. For details,
-please refer to the documentation available [here](../../docs/html/index.html). In brief:
+please refer to the documentation available [here](https://github.com/hd23408/nist-schemagen/blob/master/docs/build/html/schemagen.html).
+(TODO: Put this documentation somewhere more accessible!)
+
+In brief:
 
 ```
 import schemagen
