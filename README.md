@@ -171,6 +171,25 @@ be treated as ranges. Defaults to 25.
 * `-i, --include_na`: Whether or not to include "NaN" as one of the categorical
 values, when there are some rows that don't have a value for that column. Defaults
 to False.
+* `-c, --force_categorical`: A comma-delimited list of column names that 
+should always be considered categorical, regardless of the number of values.
+
+Example Usage:
+
+To parse a file called `foo.csv`, using an output directory called `output_dir`,
+and treating the column `ID` as categorical regardless of the number of values:
+
+```
+python main.py -o output_dir -c "ID" foo.csv
+```
+
+To parse a file called `input_files/foobar.csv`, specifying that any column with
+more than 10 values should not be considered categorical, and including "NaN"
+as a value if empty values are present in that column:
+
+```
+python main.py -m 10 -i input_files/foobar.csv
+```
 
 
 ### Using as a Module

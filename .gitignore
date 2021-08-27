@@ -5,3 +5,7 @@ __pycache__
 .project
 *.swp
 output
+test_output_datatypes
+test_output_parameters
+.coverage
+htmlcov
