@@ -175,7 +175,7 @@ to False.
 
 ### Using as a Module
 The tool can also be used as a module within a larger program. For details,
-please refer to the documentation available [here](https://nist-schemagen.readthedocs.io/en/latest/schemagen.html)
+please refer to the documentation available [here](https://nist-schemagen.readthedocs.io/en/latest/schemagen.html).
 
 In brief:
 
