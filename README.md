@@ -175,8 +175,7 @@ to False.
 
 ### Using as a Module
 The tool can also be used as a module within a larger program. For details,
-please refer to the documentation available [here](https://hd23408.github.io/nist-schemagen/html/schemagen.html)
-(TODO: Put this documentation somewhere that will allow it to use the sphinx theme)
+please refer to the documentation available [here](https://nist-schemagen.readthedocs.io/en/latest/).
 
 In brief:
 
