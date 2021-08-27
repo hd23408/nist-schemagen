@@ -27,6 +27,7 @@ NAME_FOR_PARAMETERS_FILE = "parameters.json"
 NAME_FOR_DATATYPES_FILE = "column_datatypes.json"
 
 class SchemaGenerator:
+  # Allow long lines in docs, because URLs. pylint: disable=line-too-long
   """This is a schema generating class. It can be used to read an input
   comma-separated values file and infer a schema (including datatypes,
   categorical values, and ranges).
@@ -45,6 +46,7 @@ class SchemaGenerator:
   :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`.
 
   """
+  # pylint: enable=line-too-long
 
   def __init__(self):
     """This method creates a new SchemaGenerator.
@@ -122,6 +124,7 @@ categorical fields
     return True
 
   def get_parameters_json(self):
+    # Allow long lines in docs, because URLs. pylint: disable=line-too-long
     """Returns the content that would be written to the `parameters.json` file
     as a Python dict. This contains full information about the different
     properties in the input CSV file that was parsed by the SchemaGenerator.
@@ -133,9 +136,11 @@ categorical fields
     :return: a Python dict that contains the `parameters.json` content.
     :rtype: dict
     """
+    # pylint: enable=line-too-long
     return self.output_schema
 
   def output_parameters_json(self, output_directory = "."):
+    # Allow long lines in docs, because URLs. pylint: disable=line-too-long
     """This method outputs the `parameters.json` file into
     the specified directory. The `parameters.json` file
     contains information about each column in the file, including
@@ -151,6 +156,7 @@ file. If not specified, will write out to the current working directory.
 unsuccessful.
     :rtype: str
     """
+    # pylint: enable=line-too-long
 
     output_file = os.path.join(output_directory, NAME_FOR_PARAMETERS_FILE)
 
