@@ -7,6 +7,10 @@ that the files are in the same format that is expected.
 The JSON schemae for these two files are located in the json_schemae directory.
 These schemae can also be used by a consumer to validate schemae when they
 are read in, if desired.
+
+  Typical usage example:
+
+  python validate.py -p parameters.json
 """
 
 import logging

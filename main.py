@@ -1,10 +1,5 @@
 """A script to run the schema generator against a CSV file.
 
-TODO: Leave one blank line.  The rest of this docstring should contain an
-overall description of the module or program.  Optionally, it may also
-contain a brief description of exported classes and functions and/or usage
-examples.
-
   Typical usage example:
 
   python main.py my_input_file.csv
@@ -16,7 +11,6 @@ import os
 import sys
 import schemagen
 import validate
-import json
 
 # Configure the logger to output just warnings and above; logs will
 # go to stderr by default
@@ -25,8 +19,6 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "WARNING"))
 def generate_schema(input_file, max_categorical, include_na, categorical_cols):
   # Create a SchemaGenerator
   local_schema_generator = schemagen.SchemaGenerator()
-
-  # TODO: Allow user to specify properties to force into categorical
 
   # Parse the input file
   loading_result = local_schema_generator.read_and_parse_csv(input_file,
@@ -92,7 +84,7 @@ if __name__ == "__main__":
 
   parser.add_argument("-c", "--force_categorical", help=
     "A list of column names that should always be considered categorical, \
-    regardless of the number of values. Specify in quotes, as a comma-separated \
+    regardless of the number of values. Specify in quotes, as a comma-separated\
     list (e.g. \"ColA,Column B,C\")", type=str)
 
   parser.add_argument("-i", "--include_na", help=

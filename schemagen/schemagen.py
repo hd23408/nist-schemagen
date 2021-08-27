@@ -369,7 +369,8 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
       # Now, decide if this should be treated as a categorical value or
       # something else, by checking to see how many unique values
       # there are.
-      if column in categorical_columns or len(values) <= max_values_for_categorical:
+      if column in categorical_columns or \
+          len(values) <= max_values_for_categorical:
         # Treat as a categorical value and output a list of unique values
         col_schema["kind"] = "categorical"
 
