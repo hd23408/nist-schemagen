@@ -1,6 +1,7 @@
 {
   "dtype": {
-    "A": "uint8",
-    "B": "uint32"
+    "A": "float",
+    "B": "uint32",
+    "C": "str"
   }
 }

@@ -63,6 +63,7 @@ class SchemaGenerator:
   def read_and_parse_csv(self, input_csv_file,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
     """This method loads in a new input CSV file and attempts to infer
     a schema from it. If the SchemaGenerator has already been used to
     generate a schema from a different input file, this method will clear
@@ -73,20 +74,18 @@ class SchemaGenerator:
     Error-handling: This method will trap and log exceptions directly,
     and return a simple bool indicating success or failure.
 
-    :param input_csv_file: the CSV file that should be examined to determine the
-schema
+    :param input_csv_file: the CSV file that should be examined to determine the schema
     :type input_csv_file: str
-    :param max_values_for_categorical: columns with fewer than this many values
-will be considered categorical
+    :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
-    :param include_na: whether or not to include `NaN` as a value for
-categorical fields
+    :param include_na: whether or not to include `NaN` as a value for categorical fields
     :type include_na: bool
 
     :return: whether or not the loading was successful
     :rtype: bool
 
     """
+    # pylint: enable=line-too-long
 
     # Since we're reading in a new input file, first we should
     # re-initialize the output schema that we'll be generating
@@ -139,6 +138,22 @@ categorical fields
     # pylint: enable=line-too-long
     return self.output_schema
 
+  def get_column_datatypes_json(self):
+    # Allow long lines in docs, because URLs. pylint: disable=line-too-long
+    """Returns the content that would be written to the `column_datatypes.json`
+    file, as a Python dict. This contains information about the column names
+    and datatypes that were in the input CSV file that was parsed by the
+    SchemaGenerator. It will conform to the
+    :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`
+    JSON schema. Returns None if no file has been parsed, or if the most recent
+    file was unable to be parsed.
+
+    :return: a Python dict that contains the `column_datatypes.json` content.
+    :rtype: dict
+    """
+    # pylint: enable=line-too-long
+    return self.output_datatypes
+
   def output_parameters_json(self, output_directory = "."):
     # Allow long lines in docs, because URLs. pylint: disable=line-too-long
     """This method outputs the `parameters.json` file into
@@ -148,12 +163,10 @@ categorical fields
     :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
     JSON schema.
 
-    :param output_directory: (optional) the directory into which to output the
-file. If not specified, will write out to the current working directory.
+    :param output_directory: (optional) the directory into which to output the file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
-    :return: full filepath to the output file, or None if the output was
-unsuccessful.
+    :return: full filepath to the output file, or None if the output was unsuccessful.
     :rtype: str
     """
     # pylint: enable=line-too-long
@@ -165,6 +178,7 @@ unsuccessful.
     try:
       with open(output_file, "w", encoding="utf-8") as write_file:
         json.dump(self.output_schema, write_file, indent=2)
+        write_file.write("\n") # Include a newline at the end because POSIX.
     except FileNotFoundError:
       self.log.error("Can't write to '%s'. Does the parent directory exist?",
                 output_file)
@@ -177,20 +191,20 @@ unsuccessful.
     return output_file
 
   def output_column_datatypes_json(self, output_directory = "."):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
     """This method outputs the `column_datatypes.json` file into
     the specified directory. The `column_datatypes.json` file
     contains a JSON object that identifies just the datatype
     of each column. It also includes a `skipinitialspace` property
     that can be set to true or false.
 
-    :param output_directory: (optional) the directory into which to output the
-file. If not specified, will write out to the current working directory.
+    :param output_directory: (optional) the directory into which to output the file. If not specified, will write out to the current working directory.
     :type output_directory: str
 
-    :return: full filepath to the output file, or None if the output was
-unsuccessful.
+    :return: full filepath to the output file, or None if the output was unsuccessful.
     :rtype: str
     """
+    # pylint: enable=line-too-long
 
     #TODO:
     # - what is the skipinitialspace property?
@@ -201,6 +215,7 @@ unsuccessful.
     try:
       with open(output_file, "w", encoding="utf-8") as write_file:
         json.dump(self.output_datatypes, write_file, indent=2)
+        write_file.write("\n") # Include a newline at the end because POSIX.
     except FileNotFoundError:
       self.log.error("Can't write to '%s'. Does the parent directory exist?",
                 output_file)
@@ -225,15 +240,17 @@ unsuccessful.
     self.input_csv_file = None
 
   def _load_csv(self, input_csv_file):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
     """
     Loads in the CSV file as a pandas DataFrame.
 
-    :param input_csv_file: the CSV file that should be examined to determine the schema # Docs on the same line make sphinx happy... pylint: disable=line-too-long
+    :param input_csv_file: the CSV file that should be examined to determine the schema
     :type input_csv_file: str
 
-    :return: The input CSV file as a dataframe (will raise exceptions if it encounters them) # Docs on the same line make sphinx happy... pylint: disable=line-too-long
+    :return: The input CSV file as a dataframe (will raise exceptions if it encounters them)
     :rtype: pandas.DataFrame
     """
+    # pylint: enable=line-too-long
 
     self.log.info("Reading CSV file...")
 
@@ -278,6 +295,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
   def _build_schema(self, input_data_as_dataframe,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
     """This method contains the business logic to build an appropriate
     schema object based on the information from the input dataset. It uses
     numpy helper functions to figure out what the appropriate datatype should
@@ -297,21 +315,17 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
     we expect that most people who are using this module will also be using
     pandas, it seems reasonable to keep this behavior.
 
-    :param input_data_as_dataframe: a pandas DataFrame that should be examined
-        to determine the schema
+    :param input_data_as_dataframe: a pandas DataFrame that should be examined to determine the schema
     :type input_data_as_dataframe: pandas.DataFrame
-    :param max_values_for_categorical: columns with fewer than this many values
-        will be considered categorical
+    :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
-    :param include_na: whether or not to include `NaN` as a value for
-        categorical fields
+    :param include_na: whether or not to include `NaN` as a value for categorical fields
     :type include_na: bool
 
-    :return: tuple of dicts representing the full schema and the column
-        datatypes, respectively
+    :return: tuple of dicts representing the full schema and the column datatypes, respectively
     :rtype: tuple
     """
-
+    # pylint: enable=line-too-long
 
     if include_na:
       self.log.info("Building schema...")
@@ -336,6 +350,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
       # Unique values for this column
       values = pd.unique(series)
+
       (datatype, min_value, max_value) = self._get_series_dtype(series)
       col_schema["dtype"] = datatype
 
@@ -383,6 +398,7 @@ ID-type string, and values will not be included.",
 
 
   def _get_series_dtype(self, series):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
     """
     Determine the datatype that we want to put into our schema files. This isn't
     necessarily the same as what pandas thinks the datatype of the column is.
@@ -392,16 +408,19 @@ ID-type string, and values will not be included.",
     :param: series a pandas series to examine
     :type: pandas.series
 
-    :return: a tuple containing the string version of the datatype to use and,
-        if relevant, min and max values
+    :return: a tuple containing the string version of the datatype to use and, if relevant, min and max values
     :rtype: str
     """
+    # pylint: enable=line-too-long
 
     # default datatype value is "str" when all else fails
     datatype = "str"
     # default min/max are just None
     min_value = None
     max_value = None
+
+    # Ask pandas to figure out the best possible datatype based on the data
+    series = series.infer_objects()
 
     if series.dtype.kind in ['i', 'u']: # pylint: disable=inconsistent-quotes
       # If we believe the datatype is an int, we want to

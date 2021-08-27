@@ -12,8 +12,10 @@ the SchemaGenerator class).
 import unittest
 import pathlib
 import logging
+import copy
 import os
 import pandas
+import numpy
 import schemagen
 import filecmp
 
@@ -39,16 +41,18 @@ VALID_OUTPUT_DATATYPES_FILE = str(pathlib.Path(__file__).parent.
 
 # Test dataframes to convert to a schema. This should contain
 # an assortment of the different types that we expect to parse:
-# A - int8 numeric categorical
+# A - float numeric categorical (with missing values)
 # B - int32 numeric range
 # C - string categorical
 #
-VALID_TEST_DATAFRAME = pandas.DataFrame(
+VALID_TEST_DATAFRAME = pandas.DataFrame.from_dict(
   {
-   "A": [1, 2, 3, 4, 5] * 10,
-   "B": list(range(1000000, 1000050, 1))
+   "A": [1, 2, 3, 4, 5, None, None, None, None, None] * 5,
+   "B": list(range(1000000, 1000050, 1)),
+   "C": ["A", "B", "C", "D", "E"] * 10
   }
 )
+
 # This isn't really a dataframe, it's a dict
 INVALID_TEST_DATAFRAME = {
    "A": ["a", "b", "c", "d", "e", "f", "g"],
@@ -59,22 +63,28 @@ INVALID_TEST_DATAFRAME = {
 VALID_TEST_SCHEMA = {
  "schema": {
   "A": {
-   "dtype": "uint8",
+   "dtype": "float", # This gets turned into a float because of the 'None's
    "kind": "categorical",
-   "values": [ 1, 2, 3, 4, 5 ]
+   "values": [ 1.0, 2.0, 3.0, 4.0, 5.0 ]
   },
   "B": {
    "dtype": "uint32",
    "kind": "numeric",
    "min": 1000000,
    "max": 1000049
+  },
+  "C": {
+    "dtype": "str",
+    "kind": "categorical",
+    "values": ["A", "B", "C", "D", "E"]
   }
  }
 }
 VALID_TEST_COLUMN_DATATYPES = {
  "dtype": {
-  "A": "uint8",
-  "B": "uint32"
+  "A": "float",
+  "B": "uint32",
+  "C": "str"
  }
 }
 
@@ -115,10 +125,17 @@ class TestSchemaGenerator(unittest.TestCase):
     Test outputting of the parameters file.
     """
     schema_generator = schemagen.SchemaGenerator()
+    # Make an output directory just for this test
+    test_output_dir = pathlib.Path(TEST_OUTPUT_DIRECTORY). \
+        joinpath("test_output_parameters")
+    test_output_dir.mkdir(parents=True, exist_ok=True)
+    test_output_dir = str(test_output_dir)
+    test_output_file = str(pathlib.Path(test_output_dir). \
+        joinpath("parameters.json"))
 
     # Set the output schema to a known good values;
     # here we're JUST testing the writing out of the file
-    schema_generator.output_schema = VALID_TEST_SCHEMA
+    schema_generator.output_schema = copy.deepcopy(VALID_TEST_SCHEMA)
 
     # Test writing out to a non-existent directory
     retval = schema_generator.output_parameters_json(output_directory="foo")
@@ -127,40 +144,44 @@ class TestSchemaGenerator(unittest.TestCase):
     # Test success path
     retval = None
     retval = schema_generator.output_parameters_json(output_directory=
-        TEST_OUTPUT_DIRECTORY)
-    self.assertTrue(filecmp.cmp(str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
-        joinpath("parameters.json")), VALID_OUTPUT_PARAMETERS_FILE),
-        msg = "test_output_files/parameters.json does not match " +
+        test_output_dir)
+    self.assertEqual(retval, test_output_file)
+    self.assertTrue(filecmp.cmp(test_output_file, VALID_OUTPUT_PARAMETERS_FILE),
+        msg = test_output_file + " does not match " +
         VALID_OUTPUT_PARAMETERS_FILE)
 
-    self.assertEqual(retval, str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
-        joinpath("parameters.json")))
 
   def test_output_datatypes(self):
     """
     Test outputting of the column_datatypes file.
     """
     schema_generator = schemagen.SchemaGenerator()
+    # Make an output directory just for this test
+    test_output_dir = pathlib.Path(TEST_OUTPUT_DIRECTORY). \
+        joinpath("test_output_datatypes")
+    test_output_dir.mkdir(parents=True, exist_ok=True)
+    test_output_dir = str(test_output_dir)
+    test_output_file = str(pathlib.Path(test_output_dir). \
+        joinpath("column_datatypes.json"))
 
     # Set the output datatypes to a known good values;
     # here we're JUST testing the writing out of the file
-    schema_generator.output_datatypes = VALID_TEST_COLUMN_DATATYPES
+    schema_generator.output_datatypes = \
+        copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
 
     # Test writing out to a non-existent directory
-    retval = schema_generator.output_parameters_json(output_directory="foo")
+    retval = schema_generator.output_column_datatypes_json(
+        output_directory="foo")
     self.assertEqual(retval, None)
 
     # Test success path
     retval = None
     retval = schema_generator.output_column_datatypes_json(output_directory=
-        TEST_OUTPUT_DIRECTORY)
-    self.assertTrue(filecmp.cmp(str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
-        joinpath("column_datatypes.json")), VALID_OUTPUT_DATATYPES_FILE),
-        msg = "test_output_files/column_datatypes.json does not match " +
+        test_output_dir)
+    self.assertEqual(retval, test_output_file)
+    self.assertTrue(filecmp.cmp(test_output_file, VALID_OUTPUT_DATATYPES_FILE),
+        msg = test_output_file + " does not match " +
         VALID_OUTPUT_DATATYPES_FILE)
-
-    self.assertEqual(retval, str(pathlib.Path(TEST_OUTPUT_DIRECTORY).
-        joinpath("column_datatypes.json")))
 
   def test__load_csv_succeeds(self):
     """
@@ -204,6 +225,23 @@ class TestSchemaGenerator(unittest.TestCase):
     self.assertEqual(params, VALID_TEST_SCHEMA)
     self.assertEqual(columns, VALID_TEST_COLUMN_DATATYPES)
 
+    # Confirm that when we build schema off of our test dataframe,
+    # and include "na", we get a result that looks like we expect
+    (params, columns) = schema_generator._build_schema(VALID_TEST_DATAFRAME, # We want to test private methods... pylint: disable=protected-access
+            include_na=True)
+    valid_schema_with_nan = copy.deepcopy(VALID_TEST_SCHEMA)
+    valid_schema_with_nan["schema"]["A"]["values"].append(numpy.NaN)
+    # Including NaN is going to make everything in the column a float
+    valid_schema_with_nan["schema"]["A"]["dtype"] = "float"
+    valid_schema_with_nan["schema"]["A"]["values"] = \
+        list(map(float, valid_schema_with_nan["schema"]["A"]["values"]))
+    valid_dtypes_with_nan = copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
+    valid_dtypes_with_nan["dtype"]["A"] = "float"
+
+    # Need to use numpy's assertion in order to make NaN == NaN
+    numpy.testing.assert_equal(params, valid_schema_with_nan)
+    self.assertEqual(columns, valid_dtypes_with_nan)
+
   def test__build_schema_fails(self):
     """
     Test that the `SchemaGenerator._build_schema` method fails appropriately
@@ -216,6 +254,23 @@ class TestSchemaGenerator(unittest.TestCase):
     with self.assertRaises(AttributeError):
       schema_generator._build_schema(INVALID_TEST_DATAFRAME, # We want to test private methods... pylint: disable=protected-access
           max_values_for_categorical = 4)
+
+  def test__getters(self):
+    """
+    Test that the getters for the output schema and the column datatypes
+    return the correct objects.
+    """
+    schema_generator = schemagen.SchemaGenerator()
+
+    schema_generator.output_schema = copy.deepcopy(VALID_TEST_SCHEMA)
+    self.assertEqual(schema_generator.get_parameters_json(),
+        VALID_TEST_SCHEMA)
+
+    schema_generator.output_datatypes = \
+        copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
+    self.assertEqual(schema_generator.get_column_datatypes_json(),
+        VALID_TEST_COLUMN_DATATYPES)
+
 
 if __name__ == "__main__":
   unittest.main()

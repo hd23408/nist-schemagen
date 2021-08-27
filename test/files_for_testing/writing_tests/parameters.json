@@ -1,14 +1,14 @@
 {
   "schema": {
     "A": {
-      "dtype": "uint8",
+      "dtype": "float",
       "kind": "categorical",
       "values": [
-        1,
-        2,
-        3,
-        4,
-        5
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0
       ]
     },
     "B": {
@@ -16,6 +16,17 @@
       "kind": "numeric",
       "min": 1000000,
       "max": 1000049
+    },
+    "C": {
+      "dtype": "str",
+      "kind": "categorical",
+      "values": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ]
     }
   }
 }
