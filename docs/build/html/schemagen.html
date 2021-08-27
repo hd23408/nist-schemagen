@@ -176,17 +176,31 @@
 <p>This is a module for the SchemaGenerator class, which is used
 to create schema files based on an existing CSV file.</p>
 <p>The schema generator takes as input a comma-separated datafile.
-The output is two files, a <cite>parameters.json</cite> file and a
-<cite>column_datatypes.json</cite> file. These files can be written
+The output is two files, a <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file and a
+<code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file. These files can be written
 out using the output_prarmeters_json and output_column_datatypes_json
 methods.</p>
 <blockquote>
 <div><p>Typical usage example:</p>
-<p>schema_generator = schemagen.SchemaGenerator()
-input_file = “/path/to/file.csv”
-schema_generator.read_and_parse_csv(input_file)
-parameters_json = schema_generator.get_parameters_json()</p>
 </div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">schema_generator</span> <span class="o">=</span> <span class="n">schemagen</span><span class="o">.</span><span class="n">SchemaGenerator</span><span class="p">()</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="s2">&quot;/path/to/file.csv&quot;</span>
+<span class="n">schema_generator</span><span class="o">.</span><span class="n">read_and_parse_csv</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+<span class="n">parameters_json</span> <span class="o">=</span> <span class="n">schema_generator</span><span class="o">.</span><span class="n">get_parameters_json</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="schemagen.schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL">
+<span class="sig-prename descclassname"><span class="pre">schemagen.schemagen.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MAX_VALUES_FOR_CATEGORICAL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">40</span></em><a class="headerlink" href="#schemagen.schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>(default)</em> columns with fewer than this many values will be considered categorical</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="schemagen.schemagen.DEFAULT_INCLUDE_NA">
+<span class="sig-prename descclassname"><span class="pre">schemagen.schemagen.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_INCLUDE_NA</span></span><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#schemagen.schemagen.DEFAULT_INCLUDE_NA" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>(default)</em> whether or not to include NaN as a value for categorical fields</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">schemagen.schemagen.</span></span><span class="sig-name descname"><span class="pre">SchemaGenerator</span></span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator" title="Permalink to this definition">¶</a></dt>
@@ -195,21 +209,21 @@ parameters_json = schema_generator.get_parameters_json()</p>
 comma-separated values file and infer a schema (including datatypes,
 categorical values, and ranges).</p>
 <p>The schema generator takes as input a comma-separated datafile.
-The output is two files, a <cite>parameters.json</cite> file and a
-<cite>column_datatypes.json</cite> file. These files can be written
+The output is two files, a <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file and a
+<code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file. These files can be written
 out using the output_prarmeters_json and output_column_datatypes_json
 methods.</p>
-<p>The <cite>parameters.json</cite> file contains detailed information about each
+<p>The <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file contains detailed information about each
 column, and will conform to the
-<a class="reference download internal" download="" href="_downloads/3c20d9f70f9d56d99126207699139387/parameters.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">parameters.json.schema</span></code></a>
-The <cite>column_datatypes.json</cite> file just contains the datatype information
+<a class="reference download internal" download="" href="_downloads/3c20d9f70f9d56d99126207699139387/parameters.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">parameters.json.schema</span></code></a>.
+The <code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file just contains the datatype information
 for each column in order to make processing easier, and will conform to the
 <a class="reference download internal" download="" href="_downloads/1338acda145628974e16267a31872b6e/column_datatypes.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">column_datatypes.json.schema</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator.read_and_parse_csv">
-<span class="sig-name descname"><span class="pre">read_and_parse_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_values_for_categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_na</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.read_and_parse_csv" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>This method loads in a new input CSV file and attempts to infer</dt><dd><p>a schema from it. If the SchemaGenerator has already been used to
+<span class="sig-name descname"><span class="pre">read_and_parse_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_values_for_categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_na</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.read_and_parse_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method loads in a new input CSV file and attempts to infer
+a schema from it. If the SchemaGenerator has already been used to
 generate a schema from a different input file, this method will clear
 out the previous schema (even if it encounters an error when
 reading in a new file). (If it is desirable to keep multiple schemae,
@@ -217,40 +231,18 @@ a different SchemaGenerator should be used for each input file.)</p>
 <p>Error-handling: This method will trap and log exceptions directly,
 and return a simple bool indicating success or failure.</p>
 <dl class="field-list simple">
-<dt class="field-odd">param input_csv_file</dt>
-<dd class="field-odd"><p>the CSV file that should be examined to determine the</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_csv_file</strong> (<em>str</em>) – the CSV file that should be examined to determine the schema</p></li>
+<li><p><strong>max_values_for_categorical</strong> (<em>number</em>) – columns with fewer than this many values will be considered categorical</p></li>
+<li><p><strong>include_na</strong> (<em>bool</em>) – whether or not to include <code class="docutils literal notranslate"><span class="pre">NaN</span></code> as a value for categorical fields</p></li>
+</ul>
 </dd>
-</dl>
-</dd>
-<dt>schema</dt><dd><dl class="field-list simple">
-<dt class="field-odd">type input_csv_file</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-<dt class="field-even">param max_values_for_categorical</dt>
-<dd class="field-even"><p>columns with fewer than this many values</p>
-</dd>
-</dl>
-</dd>
-<dt>will be considered categorical</dt><dd><dl class="field-list simple">
-<dt class="field-odd">type max_values_for_categorical</dt>
-<dd class="field-odd"><p>number</p>
-</dd>
-<dt class="field-even">param include_na</dt>
-<dd class="field-even"><p>whether or not to include <cite>NaN</cite> as a value for</p>
-</dd>
-</dl>
-</dd>
-<dt>categorical fields</dt><dd><dl class="field-list simple">
-<dt class="field-odd">type include_na</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">return</dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>whether or not the loading was successful</p>
 </dd>
-<dt class="field-odd">rtype</dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -258,16 +250,36 @@ and return a simple bool indicating success or failure.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator.get_parameters_json">
 <span class="sig-name descname"><span class="pre">get_parameters_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.get_parameters_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the content that would be written to the <cite>parameters.json</cite> file
+<dd><p>Returns the content that would be written to the <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file
 as a Python dict. This contains full information about the different
 properties in the input CSV file that was parsed by the SchemaGenerator.
 It will conform to the
 <a class="reference download internal" download="" href="_downloads/3c20d9f70f9d56d99126207699139387/parameters.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">parameters.json.schema</span></code></a>
-JSON schema. Returns None if no file has been parsed, or if the most recent
+JSON schema. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if no file has been parsed, or if the most recent
 file was unable to be parsed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a Python dict that contains the <cite>parameters.json</cite> content.</p>
+<dd class="field-odd"><p>a Python dict that contains the <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> content.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator.get_column_datatypes_json">
+<span class="sig-name descname"><span class="pre">get_column_datatypes_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.get_column_datatypes_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the content that would be written to the <code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code>
+file, as a Python dict. This contains information about the column names
+and datatypes that were in the input CSV file that was parsed by the
+SchemaGenerator. It will conform to the
+<a class="reference download internal" download="" href="_downloads/1338acda145628974e16267a31872b6e/column_datatypes.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">column_datatypes.json.schema</span></code></a>
+JSON schema. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if no file has been parsed, or if the most recent
+file was unable to be parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a Python dict that contains the <code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> content.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
@@ -278,32 +290,21 @@ file was unable to be parsed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator.output_parameters_json">
 <span class="sig-name descname"><span class="pre">output_parameters_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.output_parameters_json" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>This method outputs the <cite>parameters.json</cite> file into</dt><dd><p>the specified directory. The <cite>parameters.json</cite> file
+<dd><p>This method outputs the <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file into
+the specified directory. The <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file
 contains information about each column in the file, including
 min/max, values, and/or datatype. This file is expected to conform to the
 <a class="reference download internal" download="" href="_downloads/3c20d9f70f9d56d99126207699139387/parameters.json.schema"><code class="xref download docutils literal notranslate"><span class="pre">parameters.json.schema</span></code></a>
 JSON schema.</p>
 <dl class="field-list simple">
-<dt class="field-odd">param output_directory</dt>
-<dd class="field-odd"><p>(optional) the directory into which to output the</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_directory</strong> (<em>str</em>) – (optional) the directory into which to output the file. If not specified, will write out to the current working directory.</p>
 </dd>
-</dl>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>full filepath to the output file, or None if the output was unsuccessful.</p>
 </dd>
-<dt>file. If not specified, will write out to the current working directory.</dt><dd><dl class="field-list simple">
-<dt class="field-odd">type output_directory</dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
-</dd>
-<dt class="field-even">return</dt>
-<dd class="field-even"><p>full filepath to the output file, or None if the output was</p>
-</dd>
-</dl>
-</dd>
-<dt>unsuccessful.</dt><dd><dl class="field-list simple">
-<dt class="field-odd">rtype</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -311,31 +312,20 @@ JSON schema.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator.output_column_datatypes_json">
 <span class="sig-name descname"><span class="pre">output_column_datatypes_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator.output_column_datatypes_json" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>This method outputs the <cite>column_datatypes.json</cite> file into</dt><dd><p>the specified directory. The <cite>column_datatypes.json</cite> file
+<dd><p>This method outputs the <code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file into
+the specified directory. The <code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file
 contains a JSON object that identifies just the datatype
-of each column. It also includes a <cite>skipinitialspace</cite> property
+of each column. It also includes a <code class="docutils literal notranslate"><span class="pre">skipinitialspace</span></code> property
 that can be set to true or false.</p>
 <dl class="field-list simple">
-<dt class="field-odd">param output_directory</dt>
-<dd class="field-odd"><p>(optional) the directory into which to output the</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_directory</strong> (<em>str</em>) – (optional) the directory into which to output the file. If not specified, will write out to the current working directory.</p>
 </dd>
-</dl>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>full filepath to the output file, or None if the output was unsuccessful.</p>
 </dd>
-<dt>file. If not specified, will write out to the current working directory.</dt><dd><dl class="field-list simple">
-<dt class="field-odd">type output_directory</dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
-</dd>
-<dt class="field-even">return</dt>
-<dd class="field-even"><p>full filepath to the output file, or None if the output was</p>
-</dd>
-</dl>
-</dd>
-<dt>unsuccessful.</dt><dd><dl class="field-list simple">
-<dt class="field-odd">rtype</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -354,10 +344,10 @@ its pristine state.</p>
 <dd><p>Loads in the CSV file as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_csv_file</strong> (<em>str</em>) – the CSV file that should be examined to determine the schema # Docs on the same line make sphinx happy… pylint: disable=line-too-long</p>
+<dd class="field-odd"><p><strong>input_csv_file</strong> (<em>str</em>) – the CSV file that should be examined to determine the schema</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input CSV file as a dataframe (will raise exceptions if it encounters them) # Docs on the same line make sphinx happy… pylint: disable=line-too-long</p>
+<dd class="field-even"><p>The input CSV file as a dataframe (will raise exceptions if it encounters them)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -367,36 +357,32 @@ its pristine state.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="schemagen.schemagen.SchemaGenerator._build_schema">
-<span class="sig-name descname"><span class="pre">_build_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data_as_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_values_for_categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_na</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator._build_schema" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_build_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data_as_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_values_for_categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_na</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#schemagen.schemagen.SchemaGenerator._build_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method contains the business logic to build an appropriate
 schema object based on the information from the input dataset. It uses
 numpy helper functions to figure out what the appropriate datatype should
 be, and uses pandas to determine unique values for categorical datatypes.</p>
 <p>This method determines whether a numeric variable is categorical or not by
 comparing the number of values in the file to max_values_for_categorical
-parameter. This parameter defaults to <cite>DEFAULT_MAX_VALUES_FOR_CATEGORICAL</cite>.</p>
+parameter. This parameter defaults to <code class="docutils literal notranslate"><span class="pre">DEFAULT_MAX_VALUES_FOR_CATEGORICAL</span></code>.</p>
 <p>The method can also optionally include “NaN” as a value for categorical
 variables that contain some rows that do not have values. By default, it
 will not include NaN as a possible value.</p>
 <p>Note that if the input dataset has duplicate column names, they will be
 named as “column”, “column.1”, “column.2”, etc. in the output schema.
-This is how the <cite>pandas</cite> package handles duplicate column names, and since
+This is how the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> package handles duplicate column names, and since
 we expect that most people who are using this module will also be using
 pandas, it seems reasonable to keep this behavior.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_data_as_dataframe</strong> (<em>pandas.DataFrame</em>) – a pandas DataFrame that should be examined
-to determine the schema</p></li>
-<li><p><strong>max_values_for_categorical</strong> (<em>number</em>) – columns with fewer than this many values
-will be considered categorical</p></li>
-<li><p><strong>include_na</strong> (<em>bool</em>) – whether or not to include <cite>NaN</cite> as a value for
-categorical fields</p></li>
+<li><p><strong>input_data_as_dataframe</strong> (<em>pandas.DataFrame</em>) – a pandas DataFrame that should be examined to determine the schema</p></li>
+<li><p><strong>max_values_for_categorical</strong> (<em>number</em>) – columns with fewer than this many values will be considered categorical</p></li>
+<li><p><strong>include_na</strong> (<em>bool</em>) – whether or not to include <code class="docutils literal notranslate"><span class="pre">NaN</span></code> as a value for categorical fields</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>tuple of dicts representing the full schema and the column
-datatypes, respectively</p>
+<dd class="field-even"><p>tuple of dicts representing the full schema and the column datatypes, respectively</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>tuple</p>
@@ -419,8 +405,7 @@ for the column (since we’re examining the column anyway).</p>
 <dd class="field-even"><p>pandas.series</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a tuple containing the string version of the datatype to use and,
-if relevant, min and max values</p>
+<dd class="field-odd"><p>a tuple containing the string version of the datatype to use and, if relevant, min and max values</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
@@ -433,20 +418,22 @@ if relevant, min and max values</p>
 </div>
 <div class="section" id="module-schemagen">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-schemagen" title="Permalink to this headline">¶</a></h2>
-<p>This is module for the SchemaGenerator class, which is used
+<p>This is a module for the SchemaGenerator class, which is used
 to create schema files based on an existing CSV file.</p>
 <p>The schema generator takes as input a comma-separated datafile.
-The output is two files, a <cite>parameters.json</cite> file and a
-<cite>column_datatypes.json</cite> file. These files can be written
+The output is two files, a <code class="docutils literal notranslate"><span class="pre">parameters.json</span></code> file and a
+<code class="docutils literal notranslate"><span class="pre">column_datatypes.json</span></code> file. These files can be written
 out using the output_prarmeters_json and output_column_datatypes_json
 methods.</p>
 <blockquote>
 <div><p>Typical usage example:</p>
-<p>schema_generator = schemagen.SchemaGenerator()
-input_file = “/path/to/file.csv”
-schema_generator.read_and_parse_csv(input_file)
-parameters_json = schema_generator.get_parameters_json()</p>
 </div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">schema_generator</span> <span class="o">=</span> <span class="n">schemagen</span><span class="o">.</span><span class="n">SchemaGenerator</span><span class="p">()</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="s2">&quot;/path/to/file.csv&quot;</span>
+<span class="n">schema_generator</span><span class="o">.</span><span class="n">read_and_parse_csv</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+<span class="n">parameters_json</span> <span class="o">=</span> <span class="n">schema_generator</span><span class="o">.</span><span class="n">get_parameters_json</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 

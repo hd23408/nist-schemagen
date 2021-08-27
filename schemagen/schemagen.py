@@ -2,12 +2,14 @@
 to create schema files based on an existing CSV file.
 
 The schema generator takes as input a comma-separated datafile.
-The output is two files, a `parameters.json` file and a
-`column_datatypes.json` file. These files can be written
+The output is two files, a ``parameters.json`` file and a
+``column_datatypes.json`` file. These files can be written
 out using the output_prarmeters_json and output_column_datatypes_json
 methods.
 
   Typical usage example:
+
+.. code-block:: python
 
   schema_generator = schemagen.SchemaGenerator()
   input_file = "/path/to/file.csv"
@@ -21,10 +23,12 @@ import logging
 import pandas as pd
 import numpy as np
 
-DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 25
-DEFAULT_INCLUDE_NA = False
+# Allow long lines in docs. pylint: disable=line-too-long
+DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 40 #: *(default)* columns with fewer than this many values will be considered categorical
+DEFAULT_INCLUDE_NA = False #: *(default)* whether or not to include NaN as a value for categorical fields
 NAME_FOR_PARAMETERS_FILE = "parameters.json"
 NAME_FOR_DATATYPES_FILE = "column_datatypes.json"
+# pylint: enable=line-too-long
 
 class SchemaGenerator:
   # Allow long lines in docs, because URLs. pylint: disable=line-too-long
@@ -33,15 +37,15 @@ class SchemaGenerator:
   categorical values, and ranges).
 
   The schema generator takes as input a comma-separated datafile.
-  The output is two files, a `parameters.json` file and a
-  `column_datatypes.json` file. These files can be written
+  The output is two files, a ``parameters.json`` file and a
+  ``column_datatypes.json`` file. These files can be written
   out using the output_prarmeters_json and output_column_datatypes_json
   methods.
 
-  The `parameters.json` file contains detailed information about each
+  The ``parameters.json`` file contains detailed information about each
   column, and will conform to the
-  :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
-  The `column_datatypes.json` file just contains the datatype information
+  :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`.
+  The ``column_datatypes.json`` file just contains the datatype information
   for each column in order to make processing easier, and will conform to the
   :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`.
 
@@ -78,7 +82,7 @@ class SchemaGenerator:
     :type input_csv_file: str
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
-    :param include_na: whether or not to include `NaN` as a value for categorical fields
+    :param include_na: whether or not to include ``NaN`` as a value for categorical fields
     :type include_na: bool
 
     :return: whether or not the loading was successful
@@ -124,15 +128,15 @@ class SchemaGenerator:
 
   def get_parameters_json(self):
     # Allow long lines in docs, because URLs. pylint: disable=line-too-long
-    """Returns the content that would be written to the `parameters.json` file
+    """Returns the content that would be written to the ``parameters.json`` file
     as a Python dict. This contains full information about the different
     properties in the input CSV file that was parsed by the SchemaGenerator.
     It will conform to the
     :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
-    JSON schema. Returns None if no file has been parsed, or if the most recent
+    JSON schema. Returns ``None`` if no file has been parsed, or if the most recent
     file was unable to be parsed.
 
-    :return: a Python dict that contains the `parameters.json` content.
+    :return: a Python dict that contains the ``parameters.json`` content.
     :rtype: dict
     """
     # pylint: enable=line-too-long
@@ -140,15 +144,15 @@ class SchemaGenerator:
 
   def get_column_datatypes_json(self):
     # Allow long lines in docs, because URLs. pylint: disable=line-too-long
-    """Returns the content that would be written to the `column_datatypes.json`
+    """Returns the content that would be written to the ``column_datatypes.json``
     file, as a Python dict. This contains information about the column names
     and datatypes that were in the input CSV file that was parsed by the
     SchemaGenerator. It will conform to the
     :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`
-    JSON schema. Returns None if no file has been parsed, or if the most recent
+    JSON schema. Returns ``None`` if no file has been parsed, or if the most recent
     file was unable to be parsed.
 
-    :return: a Python dict that contains the `column_datatypes.json` content.
+    :return: a Python dict that contains the ``column_datatypes.json`` content.
     :rtype: dict
     """
     # pylint: enable=line-too-long
@@ -156,8 +160,8 @@ class SchemaGenerator:
 
   def output_parameters_json(self, output_directory = "."):
     # Allow long lines in docs, because URLs. pylint: disable=line-too-long
-    """This method outputs the `parameters.json` file into
-    the specified directory. The `parameters.json` file
+    """This method outputs the ``parameters.json`` file into
+    the specified directory. The ``parameters.json`` file
     contains information about each column in the file, including
     min/max, values, and/or datatype. This file is expected to conform to the
     :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
@@ -192,10 +196,10 @@ class SchemaGenerator:
 
   def output_column_datatypes_json(self, output_directory = "."):
     # Allow long lines in docs, because params. pylint: disable=line-too-long
-    """This method outputs the `column_datatypes.json` file into
-    the specified directory. The `column_datatypes.json` file
+    """This method outputs the ``column_datatypes.json`` file into
+    the specified directory. The ``column_datatypes.json`` file
     contains a JSON object that identifies just the datatype
-    of each column. It also includes a `skipinitialspace` property
+    of each column. It also includes a ``skipinitialspace`` property
     that can be set to true or false.
 
     :param output_directory: (optional) the directory into which to output the file. If not specified, will write out to the current working directory.
@@ -303,7 +307,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
     This method determines whether a numeric variable is categorical or not by
     comparing the number of values in the file to max_values_for_categorical
-    parameter. This parameter defaults to `DEFAULT_MAX_VALUES_FOR_CATEGORICAL`.
+    parameter. This parameter defaults to ``DEFAULT_MAX_VALUES_FOR_CATEGORICAL``.
 
     The method can also optionally include "NaN" as a value for categorical
     variables that contain some rows that do not have values. By default, it
@@ -311,7 +315,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
     Note that if the input dataset has duplicate column names, they will be
     named as "column", "column.1", "column.2", etc. in the output schema.
-    This is how the `pandas` package handles duplicate column names, and since
+    This is how the ``pandas`` package handles duplicate column names, and since
     we expect that most people who are using this module will also be using
     pandas, it seems reasonable to keep this behavior.
 
@@ -319,7 +323,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
     :type input_data_as_dataframe: pandas.DataFrame
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
-    :param include_na: whether or not to include `NaN` as a value for categorical fields
+    :param include_na: whether or not to include ``NaN`` as a value for categorical fields
     :type include_na: bool
 
     :return: tuple of dicts representing the full schema and the column datatypes, respectively
