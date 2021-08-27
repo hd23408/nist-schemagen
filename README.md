@@ -65,7 +65,7 @@ C-9725,87,2020-12-31,TX
   "schema": {
     "ID": {
       "dtype": "str",
-      "kind": "id"
+      "kind": "text"
     },
     "Age": {
       "dtype": "uint8",

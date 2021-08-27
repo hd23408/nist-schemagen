@@ -2,6 +2,7 @@
   "dtype": {
     "A": "float",
     "B": "uint32",
-    "C": "str"
+    "C": "str",
+    "D": "str"
   }
 }

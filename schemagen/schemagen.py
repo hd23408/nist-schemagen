@@ -387,10 +387,10 @@ values. Will include them without sorting.")
         if col_schema["dtype"] == "str":
           self.log.warning("\nNot using values for column '%s' \
 because it is non-numeric and there are more than %s \
-unique values for it. This column will be labeled as an \
-ID-type string, and values will not be included.",
-            str(column), str(max_values_for_categorical))
-          col_schema["kind"] = "id"
+unique values for it. This column will be labeled as a \
+'text' kind of string, and values will not be included.",
+              str(column), str(max_values_for_categorical))
+          col_schema["kind"] = "text"
         elif col_schema["dtype"] == "date":
           col_schema["kind"] = "date"
           col_schema["min"] = min_value

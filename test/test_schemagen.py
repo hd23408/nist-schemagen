@@ -18,6 +18,7 @@ import pandas
 import numpy
 import schemagen
 import filecmp
+import string
 
 # Suppress log messages so they don't confuse readers of the test output
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "CRITICAL"))
@@ -49,7 +50,8 @@ VALID_TEST_DATAFRAME = pandas.DataFrame.from_dict(
   {
    "A": [1, 2, 3, 4, 5, None, None, None, None, None] * 5,
    "B": list(range(1000000, 1000050, 1)),
-   "C": ["A", "B", "C", "D", "E"] * 10
+   "C": ["A", "B", "C", "D", "E"] * 10,
+   "D": list(string.ascii_letters)[0 : 50]
   }
 )
 
@@ -77,6 +79,10 @@ VALID_TEST_SCHEMA = {
     "dtype": "str",
     "kind": "categorical",
     "values": ["A", "B", "C", "D", "E"]
+  },
+  "D": {
+    "dtype": "str",
+    "kind": "text"
   }
  }
 }
@@ -84,7 +90,8 @@ VALID_TEST_COLUMN_DATATYPES = {
  "dtype": {
   "A": "float",
   "B": "uint32",
-  "C": "str"
+  "C": "str",
+  "D": "str"
  }
 }
 

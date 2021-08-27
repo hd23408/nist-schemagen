@@ -12,7 +12,7 @@
                                 "uint8", "uint16", "uint32", "uint64", 
                                 "str", "float", "date"]
                      },
-            "kind": { "enum": ["categorical", "numeric", "id", "date"] },
+            "kind": { "enum": ["categorical", "numeric", "text", "date"] },
             "values": { "type": "array" },
             "min": { 
               "anyOf": [
