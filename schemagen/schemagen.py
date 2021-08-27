@@ -42,7 +42,7 @@ class SchemaGenerator:
   :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
   The `column_datatypes.json` file just contains the datatype information
   for each column in order to make processing easier, and will conform to the
-  :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`. # Links on the same line make sphinx happy... pylint: disable=line-too-long
+  :download:`column_datatypes.json.schema <../../json_schemae/column_datatypes.json.schema>`.
 
   """
 
@@ -126,7 +126,7 @@ categorical fields
     as a Python dict. This contains full information about the different
     properties in the input CSV file that was parsed by the SchemaGenerator.
     It will conform to the
-    :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>` # Links on the same line make sphinx happy... pylint: disable=line-too-long
+    :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
     JSON schema. Returns None if no file has been parsed, or if the most recent
     file was unable to be parsed.
 
@@ -140,7 +140,7 @@ categorical fields
     the specified directory. The `parameters.json` file
     contains information about each column in the file, including
     min/max, values, and/or datatype. This file is expected to conform to the
-    :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>` # Links on the same line make sphinx happy... pylint: disable=line-too-long
+    :download:`parameters.json.schema <../../json_schemae/parameters.json.schema>`
     JSON schema.
 
     :param output_directory: (optional) the directory into which to output the
