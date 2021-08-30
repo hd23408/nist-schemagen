@@ -19,6 +19,7 @@ methods.
 
 import os.path
 import json
+import math
 import logging
 import pandas as pd
 import numpy as np
@@ -26,6 +27,7 @@ import numpy as np
 # Allow long lines in docs. pylint: disable=line-too-long
 DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 40 #: *(default)* columns with fewer than this many values will be considered categorical
 DEFAULT_INCLUDE_NA = False #: *(default)* whether or not to include NaN as a value for categorical fields
+DEFAULT_PADDING_PERCENTAGE = 0.05
 NAME_FOR_PARAMETERS_FILE = "parameters.json"
 NAME_FOR_DATATYPES_FILE = "column_datatypes.json"
 # pylint: enable=line-too-long
@@ -437,27 +439,56 @@ unique values for it. This column will be labeled as a \
 
     if series.dtype.kind in ['i', 'u']: # pylint: disable=inconsistent-quotes
       # If we believe the datatype is an int, we want to
-      # figure out the smallest numpy datatype that can store
-      # it, given the min and max values
+      # calculate min and max values and then figure out the
+      # smallest numpy int datatype that can store it, given the
+      # min and max values
       min_value = series.min().item()
       max_value = series.max().item()
 
-      # Determine the smallest type that will work for both the min
-      # and the max value (need to do both min and max because of
-      # signed vs. unsigned integers)
-      smallest_type = np.promote_types(np.min_scalar_type(min_value),
-            np.min_scalar_type(max_value))
+      # Given these min and max values, "fuzz" them a little bit
+      # by adding / subtracting 5% of the difference between the two
+      # (rounded to the nearest int, because this is an int)
+      padding_margin = math.ceil((max_value - min_value) *
+              DEFAULT_PADDING_PERCENTAGE)
+      # Don't fuzz if min_value is equal to zero, because we'd unexpectedly
+      # be going negative on it
+      if min_value != 0:
+        min_value = min_value - padding_margin
+      max_value = max_value + padding_margin
+
+      # Now determine the smallest type that will work for both the min
+      # and the max value.
+      # NOTE (mch): I wasn't able to find a clever way to do this, so since
+      # we know it's an int, let's just try them all. (a trick like
+      # np.promote_types(np.min_scalar_type(min), np.min_scalar_type(max))
+      # won't work because if the min/max are something like -4/4,
+      # promote_types will give you an int16 instead of an int8, because
+      # you end up with promote_types(int8, uint8) which gives you an int16
+      for dtype in [np.uint8, np.int8, np.uint16, np.int16,
+              np.uint32, np.int32, np.uint64, np.int64]:
+        if np.can_cast(min_value, dtype) and np.can_cast(max_value, dtype):
+          smallest_type = dtype(0).dtype.name
+          break
+
+      if not smallest_type:
+        # Failsafe
+        smallest_type = (np.promote_types(np.min_scalar_type(min_value),
+            np.min_scalar_type(max_value))).name
+
       # That's the type we'll put in the schema
-      datatype = smallest_type.name
-      min_value = series.min().item()
-      max_value = series.max().item()
+      datatype = smallest_type
 
     elif series.dtype.kind in ['f', 'c']: # pylint: disable=inconsistent-quotes
       # numpy dtypes will be `float32`/`float64`, but we just want `float`.
-      # This is a bit of a hack to get the base name of the datatype and
-      # should work for things that aren't floats, too, just in case.
-      # See also https://stackoverflow.com/a/9453240
-      datatype = type(np.zeros(1,series.dtype).tolist()[0]).__name__
+      datatype = "float"
+      min_value = series.min().item()
+      max_value = series.max().item()
+
+      # Given these min and max values, "fuzz" them a little bit
+      # by adding / subtracting 5% of the difference between the two
+      padding_margin = (max_value - min_value) * DEFAULT_PADDING_PERCENTAGE
+      min_value = min_value - padding_margin
+      max_value = max_value + padding_margin
 
     else:
       # See if we can parse it as a date
@@ -468,7 +499,8 @@ unique values for it. This column will be labeled as a \
         # Default to it just being a string
         datatype = "str"
       else:
-        min_value = str(dt.min())
-        max_value = str(dt.max())
+        # It's a date; get min/max as dates, rounded to the nearest day
+        min_value = str(dt.min().floor("D"))
+        max_value = str(dt.max().ceil("D"))
 
     return (datatype, min_value, max_value)

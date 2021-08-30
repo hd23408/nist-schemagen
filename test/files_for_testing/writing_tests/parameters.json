@@ -14,8 +14,8 @@
     "B": {
       "dtype": "uint32",
       "kind": "numeric",
-      "min": 1000000,
-      "max": 1000049
+      "min": 999997,
+      "max": 1000052
     },
     "C": {
       "dtype": "str",

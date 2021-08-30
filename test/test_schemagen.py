@@ -14,8 +14,8 @@ import pathlib
 import logging
 import copy
 import os
-import pandas
-import numpy
+import pandas as pd
+import numpy as np
 import schemagen
 import filecmp
 import string
@@ -46,7 +46,7 @@ VALID_OUTPUT_DATATYPES_FILE = str(pathlib.Path(__file__).parent.
 # B - int32 numeric range
 # C - string categorical
 #
-VALID_TEST_DATAFRAME = pandas.DataFrame.from_dict(
+VALID_TEST_DATAFRAME = pd.DataFrame.from_dict(
   {
    "A": [1, 2, 3, 4, 5, None, None, None, None, None] * 5,
    "B": list(range(1000000, 1000050, 1)),
@@ -72,8 +72,8 @@ VALID_TEST_SCHEMA = {
   "B": {
    "dtype": "uint32",
    "kind": "numeric",
-   "min": 1000000,
-   "max": 1000049
+   "min": 999997,
+   "max": 1000052
   },
   "C": {
     "dtype": "str",
@@ -199,7 +199,7 @@ class TestSchemaGenerator(unittest.TestCase):
 
     # Confirm that a valid CSV loads into a DataFrame without throwing errors
     result = schema_generator._load_csv(VALID_INPUT_DATA_FILE) # We want to test private methods... pylint: disable=protected-access
-    self.assertIsInstance(result, pandas.core.frame.DataFrame)
+    self.assertIsInstance(result, pd.core.frame.DataFrame)
 
   def test__load_csv_fails(self):
     """
@@ -213,10 +213,10 @@ class TestSchemaGenerator(unittest.TestCase):
     with self.assertRaises(FileNotFoundError):
       schema_generator._load_csv("") # We want to test private methods... pylint: disable=protected-access
     # Confirm that the ParserError is raised when it can't parse the file
-    with self.assertRaises(pandas.errors.ParserError):
+    with self.assertRaises(pd.errors.ParserError):
       schema_generator._load_csv(INVALID_INPUT_DATA_FILE) # We want to test private methods... pylint: disable=protected-access
     # Confirm that the EmptyDataError is raised if called against an empty file
-    with self.assertRaises(pandas.errors.EmptyDataError):
+    with self.assertRaises(pd.errors.EmptyDataError):
       schema_generator._load_csv(EMPTY_INPUT_DATA_FILE) # We want to test private methods... pylint: disable=protected-access
 
   def test__build_schema_succeeds(self):
@@ -237,7 +237,7 @@ class TestSchemaGenerator(unittest.TestCase):
     (params, columns) = schema_generator._build_schema(VALID_TEST_DATAFRAME, # We want to test private methods... pylint: disable=protected-access
             include_na=True)
     valid_schema_with_nan = copy.deepcopy(VALID_TEST_SCHEMA)
-    valid_schema_with_nan["schema"]["A"]["values"].append(numpy.NaN)
+    valid_schema_with_nan["schema"]["A"]["values"].append(np.NaN)
     # Including NaN is going to make everything in the column a float
     valid_schema_with_nan["schema"]["A"]["dtype"] = "float"
     valid_schema_with_nan["schema"]["A"]["values"] = \
@@ -245,8 +245,8 @@ class TestSchemaGenerator(unittest.TestCase):
     valid_dtypes_with_nan = copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
     valid_dtypes_with_nan["dtype"]["A"] = "float"
 
-    # Need to use numpy's assertion in order to make NaN == NaN
-    numpy.testing.assert_equal(params, valid_schema_with_nan)
+    # Need to use np's assertion in order to make NaN == NaN
+    np.testing.assert_equal(params, valid_schema_with_nan)
     self.assertEqual(columns, valid_dtypes_with_nan)
 
   def test__build_schema_fails(self):
@@ -277,6 +277,42 @@ class TestSchemaGenerator(unittest.TestCase):
         copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
     self.assertEqual(schema_generator.get_column_datatypes_json(),
         VALID_TEST_COLUMN_DATATYPES)
+
+  def test__get_series_dtype(self):
+    """
+    Test that the method that determines the appropriate datatype, min, and max
+    values does the right thing.
+    """
+    schema_generator = schemagen.SchemaGenerator()
+
+    series = pd.Series(["a", "b", "c", "d"])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("str", None, None))
+
+    series = pd.Series([1, 2, 2, 3, 4, 5, 6, 7, 8, 9])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("uint8", 0, 10))
+
+    series = pd.Series(list(range(1000000, 1000050, 1)))
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("uint32", 999997, 1000052))
+
+    series = pd.Series([0.1, 0.15, 0.2, 0.214, 0.25])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("float", 0.0925, 0.2575))
+
+    series = pd.Series([-1, 0, 1, -2, 0, -3])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("int8", -4, 2))
+
+    # If min is 0, don't "fuzz" it, to avoid going negative
+    series = pd.Series([0, 1, 2, 3, 4, 5])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("uint8", 0, 6))
+
+    series = pd.Series(["2021-02-25", "2021-01-05", "2021-06-22"])
+    self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
+        ("date", "2021-01-05 00:00:00", "2021-06-22 00:00:00"))
 
 
 if __name__ == "__main__":
