@@ -12,7 +12,8 @@
                                 "uint8", "uint16", "uint32", "uint64", 
                                 "str", "float", "date"]
                      },
-            "kind": { "enum": ["categorical", "numeric", "text", "date"] },
+            "kind": { "enum": ["categorical", "geographical",
+                               "numeric", "text", "date"] },
             "values": { "type": "array" },
             "codes": { "type": "array", "items": { "type": "integer" } },
             "min": { 
@@ -31,13 +32,13 @@
           "additionalProperties": false,
           "required": ["dtype", "kind"],
           "if": {
-            "properties": { "kind": { "const": "categorical" } }
+            "properties": { "kind": { "enum": ["categorical", "geographical"] }}
           },
           "then": {
             "required": [ "values", "codes" ]
           },
           "if": {
-            "properties": { "kind": { "enum": ["numeric", "date"] } }
+            "properties": { "kind": { "enum": ["numeric", "date"] }}
           },
           "then": {
             "required": [ "min", "max" ]

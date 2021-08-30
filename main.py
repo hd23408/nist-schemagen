@@ -16,13 +16,14 @@ import validate
 # go to stderr by default
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "WARNING"))
 
-def generate_schema(input_file, max_categorical, include_na, categorical_cols):
+def generate_schema(input_file, max_categorical, include_na,
+        categorical_cols, geographical_cols):
   # Create a SchemaGenerator
   local_schema_generator = schemagen.SchemaGenerator()
 
   # Parse the input file
   loading_result = local_schema_generator.read_and_parse_csv(input_file,
-    max_categorical, include_na, categorical_cols)
+    max_categorical, include_na, categorical_cols, geographical_cols)
 
   # If the loading was unsuccessful, exit
   if not loading_result:
@@ -82,9 +83,14 @@ if __name__ == "__main__":
     str(schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL),
     default=schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL, type=int)
 
-  parser.add_argument("-c", "--force_categorical", help=
+  parser.add_argument("-c", "--categorical", help=
     "A list of column names that should always be considered categorical, \
     regardless of the number of values. Specify in quotes, as a comma-separated\
+    list (e.g. \"ColA,Column B,C\")", type=str)
+
+  parser.add_argument("-g", "--geographical", help=
+    "A list of column names that should be considered geographical, \
+    a special kind of categorical. Specify in quotes, as a comma-separated\
     list (e.g. \"ColA,Column B,C\")", type=str)
 
   parser.add_argument("-i", "--include_na", help=
@@ -99,12 +105,19 @@ if __name__ == "__main__":
   # If the user has specified a list of columns to treat as categorical,
   # parse the string argument into a list
   categorical_columns = None
-  if args.force_categorical:
-    categorical_columns = args.force_categorical.split(",")
+  if args.categorical:
+    categorical_columns = [c.strip(" ") for c in args.categorical.split(",")]
+
+  # If the user has specified a list of columns to treat as geographical,
+  # parse the string argument into a list
+  geographical_columns = None
+  if args.geographical:
+    geographical_columns = [c.strip(" ") for c in args.geographical.split(",")]
 
   # Generate the schema
   schema_generator = generate_schema(args.inputfile,
-          args.max_categorical, args.include_na, categorical_columns)
+          args.max_categorical, args.include_na,
+          categorical_columns, geographical_columns)
 
   # The schema wasn't able to be generated
   if not schema_generator:

@@ -69,7 +69,8 @@ class SchemaGenerator:
   def read_and_parse_csv(self, input_csv_file,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA,
-            categorical_columns = None):
+            categorical_columns = None,
+            geographical_columns = None):
     # Allow long lines in docs, because params. pylint: disable=line-too-long
     """This method loads in a new input CSV file and attempts to infer
     a schema from it. If the SchemaGenerator has already been used to
@@ -88,6 +89,8 @@ class SchemaGenerator:
     :param include_na: whether or not to include ``NaN`` as a value for categorical fields
     :type include_na: bool
     :param categorical_columns: a list of names of columns to always treat as categorical, regardless of number of values
+    :type include_na: list
+    :param geographical_columns: a list of names of columns to always treat as geographical (and therefore categorical), regardless of number of values
     :type include_na: list
 
     :return: whether or not the loading was successful
@@ -121,7 +124,8 @@ class SchemaGenerator:
       # Do the processing needed to generate the schema
       (self.output_schema, self.output_datatypes) = \
             self._build_schema(self.input_data_as_dataframe,
-                max_values_for_categorical, include_na, categorical_columns)
+                max_values_for_categorical, include_na,
+                categorical_columns, geographical_columns)
     except: # Logging the full exception... pylint: disable=bare-except
       # Re-clear these variables to make sure nothing is in a half-loaded state
       self._clear_class_variables()
@@ -304,7 +308,8 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
   def _build_schema(self, input_data_as_dataframe,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA,
-            categorical_columns = None):
+            categorical_columns = None,
+            geographical_columns = None):
     # Allow long lines in docs, because params. pylint: disable=line-too-long
     """This method contains the business logic to build an appropriate
     schema object based on the information from the input dataset. It uses
@@ -333,6 +338,8 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
     :type include_na: bool
     :param categorical_columns: a list of names of columns to always treat as categorical, regardless of number of values
     :type include_na: list
+    :param geographical_columns: a list of names of columns to always treat as geographical (and therefore categorical)
+    :type include_na: list
 
     :return: tuple of dicts representing the full schema and the column datatypes, respectively
     :rtype: tuple
@@ -343,8 +350,11 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
       self.log.info("Building schema...")
     else:
       self.log.info("Building schema without using NAs...")
+
     if not categorical_columns:
       categorical_columns = []
+    if not geographical_columns:
+      geographical_columns = []
 
     # Start the return value off with an empty schema structure
     output_schema = { "schema": {} }
@@ -371,10 +381,15 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
       # Now, decide if this should be treated as a categorical value or
       # something else, by checking to see how many unique values
       # there are.
-      if column in categorical_columns or \
+      if column.strip(" ") in categorical_columns or \
+          column.strip(" ") in geographical_columns or \
           len(values) <= max_values_for_categorical:
+
         # Treat as a categorical value and output a list of unique values
-        col_schema["kind"] = "categorical"
+        if column in geographical_columns:
+          col_schema["kind"] = "geographical"
+        else:
+          col_schema["kind"] = "categorical"
 
         # If we're including NA, it's frequently not going to be sortable,
         # so don't even try
