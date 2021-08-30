@@ -14,6 +14,7 @@
                      },
             "kind": { "enum": ["categorical", "numeric", "text", "date"] },
             "values": { "type": "array" },
+            "codes": { "type": "array", "items": { "type": "integer" } },
             "min": { 
               "anyOf": [
                 { "type": "number" },
@@ -33,7 +34,7 @@
             "properties": { "kind": { "const": "categorical" } }
           },
           "then": {
-            "required": [ "values" ]
+            "required": [ "values", "codes" ]
           },
           "if": {
             "properties": { "kind": { "enum": ["numeric", "date"] } }

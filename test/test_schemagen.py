@@ -48,51 +48,53 @@ VALID_OUTPUT_DATATYPES_FILE = str(pathlib.Path(__file__).parent.
 #
 VALID_TEST_DATAFRAME = pd.DataFrame.from_dict(
   {
-   "A": [1, 2, 3, 4, 5, None, None, None, None, None] * 5,
-   "B": list(range(1000000, 1000050, 1)),
-   "C": ["A", "B", "C", "D", "E"] * 10,
-   "D": list(string.ascii_letters)[0 : 50]
+    "A": [1, 2, 3, 4, 5, None, None, None, None, None] * 5,
+    "B": list(range(1000000, 1000050, 1)),
+    "C": ["A", "B", "C", "D", "E"] * 10,
+    "D": list(string.ascii_letters)[0 : 50]
   }
 )
 
 # This isn't really a dataframe, it's a dict
 INVALID_TEST_DATAFRAME = {
-   "A": ["a", "b", "c", "d", "e", "f", "g"],
-   "B": list(range(1, 8, 1))
-  }
+  "A": ["a", "b", "c", "d", "e", "f", "g"],
+  "B": list(range(1, 8, 1))
+}
 
 # The appropriate schema and column datatypes to create from the test data above
 VALID_TEST_SCHEMA = {
- "schema": {
-  "A": {
-   "dtype": "float", # This gets turned into a float because of the 'None's
-   "kind": "categorical",
-   "values": [ 1.0, 2.0, 3.0, 4.0, 5.0 ]
-  },
-  "B": {
-   "dtype": "uint32",
-   "kind": "numeric",
-   "min": 999997,
-   "max": 1000052
-  },
-  "C": {
-    "dtype": "str",
-    "kind": "categorical",
-    "values": ["A", "B", "C", "D", "E"]
-  },
-  "D": {
-    "dtype": "str",
-    "kind": "text"
+  "schema": {
+    "A": {
+      "dtype": "float", # This gets turned into a float because of the 'None's
+      "kind": "categorical",
+      "values": [ 1.0, 2.0, 3.0, 4.0, 5.0 ],
+      "codes": [ 1, 2, 3, 4, 5 ]
+    },
+    "B": {
+      "dtype": "uint32",
+      "kind": "numeric",
+      "min": 999997,
+      "max": 1000052
+    },
+    "C": {
+      "dtype": "str",
+      "kind": "categorical",
+      "values": ["A", "B", "C", "D", "E"],
+      "codes": [1, 2, 3, 4, 5]
+    },
+    "D": {
+      "dtype": "str",
+      "kind": "text"
+    }
   }
- }
 }
 VALID_TEST_COLUMN_DATATYPES = {
- "dtype": {
-  "A": "float",
-  "B": "uint32",
-  "C": "str",
-  "D": "str"
- }
+  "dtype": {
+    "A": "float",
+    "B": "uint32",
+    "C": "str",
+    "D": "str"
+  }
 }
 
 class TestSchemaGenerator(unittest.TestCase):
@@ -242,6 +244,8 @@ class TestSchemaGenerator(unittest.TestCase):
     valid_schema_with_nan["schema"]["A"]["dtype"] = "float"
     valid_schema_with_nan["schema"]["A"]["values"] = \
         list(map(float, valid_schema_with_nan["schema"]["A"]["values"]))
+    valid_schema_with_nan["schema"]["A"]["codes"] = \
+        [1, 2, 3, 4, 5, 6]
     valid_dtypes_with_nan = copy.deepcopy(VALID_TEST_COLUMN_DATATYPES)
     valid_dtypes_with_nan["dtype"]["A"] = "float"
 

@@ -385,8 +385,10 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
             self.log.exception("Encountered an error when trying to sort the \
 values. Will include them without sorting.")
         col_schema["values"] = values.tolist()
+        col_schema["codes"] = list(range(1, len(values)+1))
 
       else:
+        # Not categorical data
         if col_schema["dtype"] == "str":
           self.log.warning("\nNot using values for column '%s' \
 because it is non-numeric and there are more than %s \
