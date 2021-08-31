@@ -74,7 +74,8 @@ VALID_TEST_SCHEMA = {
       "dtype": "uint32",
       "kind": "numeric",
       "min": 999997,
-      "max": 1000052
+      "max": 1000052,
+      "bins": 10
     },
     "C": {
       "dtype": "str",
