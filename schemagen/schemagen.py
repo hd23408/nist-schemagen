@@ -27,6 +27,7 @@ import numpy as np
 # Allow long lines in docs. pylint: disable=line-too-long
 DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 40 #: *(default)* columns with fewer than this many values will be considered categorical
 DEFAULT_INCLUDE_NA = False #: *(default)* whether or not to include NaN as a value for categorical fields
+DEFAULT_INCLUDE_TEXT = False #: *(default)* whether or not to include columns of kind "text" (non-categorical string columns)
 DEFAULT_PADDING_PERCENTAGE = 0.05
 NAME_FOR_PARAMETERS_FILE = "parameters.json"
 NAME_FOR_DATATYPES_FILE = "column_datatypes.json"
@@ -67,6 +68,7 @@ class SchemaGenerator:
     self.log = logging.getLogger(__name__)
 
   def read_and_parse_csv(self, input_csv_file,
+            include_text_columns = DEFAULT_INCLUDE_TEXT, skip_columns = None,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA,
             categorical_columns = None,
@@ -84,6 +86,10 @@ class SchemaGenerator:
 
     :param input_csv_file: the CSV file that should be examined to determine the schema
     :type input_csv_file: str
+    :param include_text_columns: whether or not to include columns that have a kind of "text" (non-categorical string fields)
+    :type include_text_columns: bool
+    :param skip_columns: a list of names of columns to skip completely
+    :type include_na: list
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
     :param include_na: whether or not to include ``NaN`` as a value for categorical fields
@@ -124,6 +130,7 @@ class SchemaGenerator:
       # Do the processing needed to generate the schema
       (self.output_schema, self.output_datatypes) = \
             self._build_schema(self.input_data_as_dataframe,
+                include_text_columns, skip_columns,
                 max_values_for_categorical, include_na,
                 categorical_columns, geographical_columns)
     except: # Logging the full exception... pylint: disable=bare-except
@@ -306,6 +313,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
 
   def _build_schema(self, input_data_as_dataframe,
+            include_text_columns = DEFAULT_INCLUDE_TEXT, skip_columns = None,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
             include_na = DEFAULT_INCLUDE_NA,
             categorical_columns = None,
@@ -332,6 +340,10 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
     :param input_data_as_dataframe: a pandas DataFrame that should be examined to determine the schema
     :type input_data_as_dataframe: pandas.DataFrame
+    :param include_text_columns: whether or not to include columns that have a kind of "text" (non-categorical string fields)
+    :type include_text_columns: bool
+    :param skip_columns: a list of names of columns to skip completely
+    :type include_na: list
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
     :param include_na: whether or not to include ``NaN`` as a value for categorical fields
@@ -355,6 +367,8 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
       categorical_columns = []
     if not geographical_columns:
       geographical_columns = []
+    if not skip_columns:
+      skip_columns = []
 
     # Start the return value off with an empty schema structure
     output_schema = { "schema": {} }
@@ -362,6 +376,9 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
 
     # loop over each column, and add the values and the datatype to the dict
     for column in input_data_as_dataframe.columns:
+      if column.strip(" ") in skip_columns:
+        self.log.info("Skipping column %s as requested", column)
+        continue
 
       # The actual values for the column
       series = input_data_as_dataframe[column]
@@ -405,6 +422,11 @@ values. Will include them without sorting.")
       else:
         # Not categorical data
         if col_schema["dtype"] == "str":
+          if not include_text_columns:
+            self.log.warning("Skipping '%s' because it is freetext", column)
+            col_schema = None
+            continue
+
           self.log.warning("\nNot using values for column '%s' \
 because it is non-numeric and there are more than %s \
 unique values for it. This column will be labeled as a \

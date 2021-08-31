@@ -22,3 +22,4 @@ methods.
 from .schemagen import SchemaGenerator
 from .schemagen import DEFAULT_MAX_VALUES_FOR_CATEGORICAL
 from .schemagen import DEFAULT_INCLUDE_NA
+from .schemagen import DEFAULT_INCLUDE_TEXT

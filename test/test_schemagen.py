@@ -230,14 +230,15 @@ class TestSchemaGenerator(unittest.TestCase):
 
     # Confirm that when we build schema off of our test dataframe,
     # we get a result that looks like our expected schema
-    (params, columns) = schema_generator._build_schema(VALID_TEST_DATAFRAME) # We want to test private methods... pylint: disable=protected-access
+    (params, columns) = schema_generator._build_schema(VALID_TEST_DATAFRAME,
+        include_text_columns=True) # We want to test private methods... pylint: disable=protected-access
     self.assertEqual(params, VALID_TEST_SCHEMA)
     self.assertEqual(columns, VALID_TEST_COLUMN_DATATYPES)
 
     # Confirm that when we build schema off of our test dataframe,
     # and include "na", we get a result that looks like we expect
     (params, columns) = schema_generator._build_schema(VALID_TEST_DATAFRAME, # We want to test private methods... pylint: disable=protected-access
-            include_na=True)
+            include_text_columns=True, include_na=True)
     valid_schema_with_nan = copy.deepcopy(VALID_TEST_SCHEMA)
     valid_schema_with_nan["schema"]["A"]["values"].append(np.NaN)
     # Including NaN is going to make everything in the column a float

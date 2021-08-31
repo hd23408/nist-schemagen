@@ -16,14 +16,16 @@ import validate
 # go to stderr by default
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "WARNING"))
 
-def generate_schema(input_file, max_categorical, include_na,
+def generate_schema(input_file, include_text, skip_cols,
+        max_categorical, include_na,
         categorical_cols, geographical_cols):
   # Create a SchemaGenerator
   local_schema_generator = schemagen.SchemaGenerator()
 
   # Parse the input file
   loading_result = local_schema_generator.read_and_parse_csv(input_file,
-    max_categorical, include_na, categorical_cols, geographical_cols)
+    include_text, skip_cols, max_categorical, include_na,
+    categorical_cols, geographical_cols)
 
   # If the loading was unsuccessful, exit
   if not loading_result:
@@ -93,11 +95,22 @@ if __name__ == "__main__":
     a special kind of categorical. Specify in quotes, as a comma-separated\
     list (e.g. \"ColA,Column B,C\")", type=str)
 
+  parser.add_argument("-s", "--skip_columns", help=
+    "A list of column names that should be skipped entirely. \
+    Specify in quotes, as a comma-separated\
+    list (e.g. \"ColA,Column B,C\")", type=str)
+
   parser.add_argument("-i", "--include_na", help=
-    "Whether or not to include NA as part of the categorical values, if some \
+    "Specify this to include NA as part of the categorical values, if some \
     records don't have a value for that column. Defaults to " +
     str(schemagen.DEFAULT_INCLUDE_NA),
     default=schemagen.DEFAULT_INCLUDE_NA, action="store_true")
+
+  parser.add_argument("-t", "--include_text_columns", help=
+    "Specify this to include columns that are type 'kind' (non-categorical \
+    string columns). Defaults to " +
+    str(schemagen.DEFAULT_INCLUDE_TEXT),
+    default=schemagen.DEFAULT_INCLUDE_TEXT, action="store_true")
 
   # The argument parser will error out if the input file isn't specified
   args = parser.parse_args()
@@ -114,8 +127,15 @@ if __name__ == "__main__":
   if args.geographical:
     geographical_columns = [c.strip(" ") for c in args.geographical.split(",")]
 
+  # If the user has specified a list of columns to skip,
+  # parse the string argument into a list
+  skip_columns = None
+  if args.skip_columns:
+    skip_columns = [c.strip(" ") for c in args.skip_columns.split(",")]
+
   # Generate the schema
   schema_generator = generate_schema(args.inputfile,
+          args.include_text_columns, skip_columns,
           args.max_categorical, args.include_na,
           categorical_columns, geographical_columns)
 
@@ -123,8 +143,6 @@ if __name__ == "__main__":
   if not schema_generator:
     logging.error("Unable to generate schema. Please review logs for details.")
     sys.exit()
-
-  # TODO (mch): Potentially allow the user to review the schema column by column
 
   # Output the schema files
   output_schema(schema_generator, args.outputdir)
