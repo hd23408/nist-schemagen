@@ -87,6 +87,12 @@ C-9725,87,2020-12-31,TX
         "CT",
         "FL",
         "TX"
+      ],
+      "codes": [
+        1,
+        2,
+        3,
+        4
       ]
     }
   }
@@ -155,7 +161,7 @@ To run the tool from a command line, do the following:
 `python main.py /path/to/input.csv`
 
 3. After the tool has processed your input CSV file, two files will be written
-out directly in the root directory:
+out to the current working directory:
 	* `parameters.json` 
 	* `column_datatypes.json`
 
@@ -163,22 +169,21 @@ out directly in the root directory:
 The script provides a variety of command-line options, which can be 
 viewed by running `python main.py -h`. They are:
 
-* `-o, --output_dir`: an output directory into which the output files should be
-written (e.g. `python main.py -o /path/to/output /path/to/input.csv`)
-* `-m, --max_categorical`: the maximum number of values a column can have
-to be considered categorical. Columns with more than this number of values will
-be treated as ranges. Defaults to 25.
-* `-i, --include_na`: Whether or not to include "NaN" as one of the categorical
-values, when there are some rows that don't have a value for that column. Defaults
-to False.
-* `-c, --force_categorical`: A comma-delimited list of column names that 
-should always be considered categorical, regardless of the number of values.
+Flag | Description | Default
+--- | --- | ---
+`-o, --output_dir` | An output directory into which the output files should be written | current directory
+`-m, --max_categorical` | The maximum number of values a column can have to be considered categorical. columns with more than this number of values will be treated as ranges or text. | 40
+`-c, --categorical` | A list of column names that the generator should always consider as categorical, regardless of the number of values. Specify in quotes, as a comma-separated list (e.g. "Hospital Name, Gender"). Case-sensitive. | None
+`-g, --geographical` | A list of column names that the generator should always consider as the special "geographical" kind. Geographical columns are considered categorical, but are labeled specially in order to facilitate geographical processing. Specify in quotes, as a comma-separated list (e.g. "State, Country"). Case-sensitive. | None
+`-s, --skip_columns` | A list of column names that should be skipped entirely. Specify in quotes, as a comma-separated list (e.g. "ColA, Column B") | None
+`-i, --include_na` | Include "NaN" as one of the categorical values, when there are some rows that don't have a value for that column. By default, this is omitted. | False
+`-t, --include_text_columns` | Include in the schema the names of columns that are non-categorical strings (type "text"). By default, these are omitted. | False
 
-Example Usage:
+#### Example Usage:
 
 To parse a file called `foo.csv`, using an output directory called `output_dir`,
 and treating the column `ID` as categorical regardless of the number of values:
-
+ 
 ```
 python main.py -o output_dir -c "ID" foo.csv
 ```
@@ -191,10 +196,9 @@ as a value if empty values are present in that column:
 python main.py -m 10 -i input_files/foobar.csv
 ```
 
-
 ### Using as a Module
 The tool can also be used as a module within a larger program. For details,
-please refer to the documentation available [here](https://nist-schemagen.readthedocs.io/en/latest/schemagen.html).
+please refer to the documentation available [here](https://nist-schemagen.readthedocs.io/en/latest/schemagen.html#module-schemagen.schemagen).
 
 In brief:
 
@@ -250,4 +254,5 @@ For instance, to run pylint against the full SchemaGenerator module itself, run:
 Or, to run against the `main.py` script:
 
 `pylint main.py`
+
 

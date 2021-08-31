@@ -107,7 +107,7 @@ if __name__ == "__main__":
     default=schemagen.DEFAULT_INCLUDE_NA, action="store_true")
 
   parser.add_argument("-t", "--include_text_columns", help=
-    "Specify this to include columns that are type 'kind' (non-categorical \
+    "Specify this to include columns that are type 'text' (non-categorical \
     string columns). Defaults to " +
     str(schemagen.DEFAULT_INCLUDE_TEXT),
     default=schemagen.DEFAULT_INCLUDE_TEXT, action="store_true")
