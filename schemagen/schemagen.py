@@ -26,7 +26,7 @@ import numpy as np
 
 # Allow long lines in docs. pylint: disable=line-too-long
 DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 40 #: *(default)* columns with fewer than this many values will be considered categorical
-DEFAULT_NUM_BINS = 10 #: *(default)* 
+DEFAULT_NUM_BINS = 10 #: *(default)* informational "number of bins" into which a consumer of the schema should bucket the values
 DEFAULT_INCLUDE_NA = False #: *(default)* whether or not to include NaN as a value for categorical fields
 DEFAULT_INCLUDE_TEXT = False #: *(default)* whether or not to include columns of kind "text" (non-categorical string columns)
 DEFAULT_PADDING_PERCENTAGE = 0.05
