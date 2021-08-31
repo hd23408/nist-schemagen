@@ -455,7 +455,8 @@ unique values for it. This column will be labeled as a \
           col_schema["kind"] = "numeric"
           col_schema["min"] = min_value
           col_schema["max"] = max_value
-          col_schema["bins"] = num_bins
+          if num_bins > 0:
+            col_schema["bins"] = num_bins
 
       output_schema["schema"][column] = col_schema
       # Also add this column and its datatype to the output_datatypes dict

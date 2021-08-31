@@ -211,6 +211,61 @@ schema_generator.read_and_parse_csv(input_file)
 parameters_json = schema_generator.get_parameters_json()
 ```
 
+# Schema Description
+The schema that is produced is a JSON file, which conforms to the JSON schema file
+included [here](https://github.com/hd23408/nist-schemagen/blob/master/json_schemae/parameters.json.schema). The schema contains one root key (`schema`) that itself
+contains a JSON object with one key per column. Only those columns that should be
+processed are included in the schema (ref. the `--skip_columns` and `--include_text_columns` command-line arguments).
+
+The value for each column key is a JSON object (a Python dict), which itself contains
+the following keys:
+
+* `dtype` (required): A string representing the native datatype for this column.
+Available values are: `int8`, `int16`, `int32`, `int64`, `uint8`, `uint16`, `uint32`, `uint64`, `str`, `float`, or `date`
+* `kind` (required): A string representing what type of data this column contains.
+Available values are:
+    * `categorical`: This column represents a variable that can take on one of a limited number of possible values. For `categorical` columns, the schema will include a
+`values` array, containing the actual values that are present in the CSV file, as well
+as a `codes` array, containing an integer mapping for each value, which can be used
+during processing. Categorical columns are determined based on the number of values
+included in the source CSV (ref. also the `--max_categorical` and `--categorical`
+command-line arguments). By default, they do not contain `NaN` as one of the available
+values, even if some rows of the source data are missing a value (ref. the
+`--include_na` command-line argument).
+    * `geographical`: A special type of `categorical` variable that contains information
+that is semantically geographic in nature. To use geographical columns, they must
+be specified on the command line when running the tool (ref. the `--geographical`
+command-line argument).
+    * `numeric`: This column is strictly numeric in nature. Numeric columns will
+have a `min`, `max`, and (optionally) `bins` number specified (ref. the
+`--num_bins` command-line argument).
+    * `date`: This column represents a date. The tool attempts to parse the values
+from the column as a datetime, and if successful, assumes that the column contains
+date information. A `min` and `max` date will be included. Date columns should be
+double-checked for accuracy, as the parsing attempt is inexact.
+    * `text`: By default, text columns are not included in the schema. A column is
+considered to be `text` if it contains more than `max_categorical` possible values
+and the values are non-numeric and not parsable as dates (ref. the 
+`--include_text_columns` command-line argument).
+* `values` and `codes` (only when `kind` is `categorical` or `geographic`): Two arrays
+containing the actual values present in the input CSV, as well as an integer code
+that can be used when processing the data. Note that for situations where the `values`
+themselves are integers, they may be the same as or different from the integer `codes`.
+The `dtype` of this column will represent the actual datatype of the `values`. For
+instance, if the values present in the CSV are `M`, `F`, `O`, the `dtype` will be
+`str`, the `values` array will be `{ "M", "F", "O" }`, and the `codes` array will
+be `{ 1, 2, 3 }`.
+* `min`, `max`, and `bins` (only when `kind` is `numeric` or `date`):
+The `min` value and the `max` value are the adjusted range of the values, and are
+slightly smaller and larger (respectively) than the range specified in the source CSV.
+The `bins` number is a recommendation for the number of bins into which to divide
+the values during processing, and is informational only. The number of bins can be
+specified on the command line and is a constant for all columns (it is not inferred
+by the tool) (ref. the `--num_bins` command-line argument). `bins` can be
+suppressed entirely by specifying a `--num_bins` less than or equal to `0`.
+(`bins` is never included for `date` columns.)
+
+
 # Validating an Existing Schema
 This tool can also be used to validate an existing schema file that was produced
 either by this tool or by hand. When running the tool from the command line,
