@@ -171,11 +171,12 @@ viewed by running `python main.py -h`. They are:
 
 Flag | Description | Default
 --- | --- | ---
-`-o, --output_dir` | An output directory into which the output files should be written | current directory
-`-m, --max_categorical` | The maximum number of values a column can have to be considered categorical. columns with more than this number of values will be treated as ranges or text. | 40
-`-c, --categorical` | A list of column names that the generator should always consider as categorical, regardless of the number of values. Specify in quotes, as a comma-separated list (e.g. "Hospital Name, Gender"). Case-sensitive. | None
-`-g, --geographical` | A list of column names that the generator should always consider as the special "geographical" kind. Geographical columns are considered categorical, but are labeled specially in order to facilitate geographical processing. Specify in quotes, as a comma-separated list (e.g. "State, Country"). Case-sensitive. | None
-`-s, --skip_columns` | A list of column names that should be skipped entirely. Specify in quotes, as a comma-separated list (e.g. "ColA, Column B") | None
+`-o, --output_dir <DIR>` | An output directory into which the output files should be written | current directory
+`-m, --max_categorical <INT>` | The maximum number of values a column can have to be considered categorical. columns with more than this number of values will be treated as ranges or text. | 40
+`-b, --num_bins <INT>` | Provide default 'number of bins' information for numeric variables. This number will be included in the output schema for each numeric variable, for informational purposes only. if needed, values for individual variables should be adjusted directly in the output file. Set this to 0 to suppress output of bucketing information entirely. | 10
+`-c, --categorical <LIST>` | A list of column names that the generator should always consider as categorical, regardless of the number of values. Specify in quotes, as a comma-separated list (e.g. "Hospital Name, Gender"). Case-sensitive. | None
+`-g, --geographical <LIST>` | A list of column names that the generator should always consider as the special "geographical" kind. Geographical columns are considered categorical, but are labeled specially in order to facilitate geographical processing. Specify in quotes, as a comma-separated list (e.g. "State, Country"). Case-sensitive. | None
+`-s, --skip_columns <LIST>` | A list of column names that should be skipped entirely. Specify in quotes, as a comma-separated list (e.g. "ColA, Column B") | None
 `-i, --include_na` | Include "NaN" as one of the categorical values, when there are some rows that don't have a value for that column. By default, this is omitted. | False
 `-t, --include_text_columns` | Include in the schema the names of columns that are non-categorical strings (type "text"). By default, these are omitted. | False
 

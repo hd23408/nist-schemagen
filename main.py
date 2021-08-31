@@ -17,15 +17,22 @@ import validate
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "WARNING"))
 
 def generate_schema(input_file, include_text, skip_cols,
-        max_categorical, include_na,
+        max_categorical, num_bins, include_na,
         categorical_cols, geographical_cols):
   # Create a SchemaGenerator
   local_schema_generator = schemagen.SchemaGenerator()
 
   # Parse the input file
-  loading_result = local_schema_generator.read_and_parse_csv(input_file,
-    include_text, skip_cols, max_categorical, include_na,
-    categorical_cols, geographical_cols)
+  loading_result = local_schema_generator.read_and_parse_csv(
+      input_file,
+      include_text_columns=include_text,
+      skip_columns=skip_cols,
+      max_values_for_categorical=max_categorical,
+      num_bins=num_bins,
+      include_na=include_na,
+      categorical_columns=categorical_cols,
+      geographical_columns=geographical_cols
+  )
 
   # If the loading was unsuccessful, exit
   if not loading_result:
@@ -85,6 +92,15 @@ if __name__ == "__main__":
     str(schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL),
     default=schemagen.DEFAULT_MAX_VALUES_FOR_CATEGORICAL, type=int)
 
+  parser.add_argument("-b", "--num_bins", help=
+    "Provide default 'number of bins' information for numeric variables. \
+    This number will be included in the output schema for each numeric \
+    variable, for informational purposes only. If needed, overrides for \
+    individual variables should be adjusted directly in the output file. \
+    Set this to 0 to suppress output of bucketing information. Defaults to " +
+    str(schemagen.DEFAULT_NUM_BINS),
+    default=schemagen.DEFAULT_NUM_BINS, type=int)
+
   parser.add_argument("-c", "--categorical", help=
     "A list of column names that should always be considered categorical, \
     regardless of the number of values. Specify in quotes, as a comma-separated\
@@ -136,7 +152,7 @@ if __name__ == "__main__":
   # Generate the schema
   schema_generator = generate_schema(args.inputfile,
           args.include_text_columns, skip_columns,
-          args.max_categorical, args.include_na,
+          args.max_categorical, args.num_bins,  args.include_na,
           categorical_columns, geographical_columns)
 
   # The schema wasn't able to be generated

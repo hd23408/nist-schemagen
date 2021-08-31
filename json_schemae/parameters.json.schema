@@ -27,7 +27,8 @@
                 { "type": "number" },
                 { "type": "string", "format": "date" }
               ]
-            }
+            },
+            "bins": { "type": "number" }
           },
           "additionalProperties": false,
           "required": ["dtype", "kind"],

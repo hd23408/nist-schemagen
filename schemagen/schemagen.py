@@ -26,6 +26,7 @@ import numpy as np
 
 # Allow long lines in docs. pylint: disable=line-too-long
 DEFAULT_MAX_VALUES_FOR_CATEGORICAL = 40 #: *(default)* columns with fewer than this many values will be considered categorical
+DEFAULT_NUM_BINS = 10 #: *(default)* 
 DEFAULT_INCLUDE_NA = False #: *(default)* whether or not to include NaN as a value for categorical fields
 DEFAULT_INCLUDE_TEXT = False #: *(default)* whether or not to include columns of kind "text" (non-categorical string columns)
 DEFAULT_PADDING_PERCENTAGE = 0.05
@@ -70,6 +71,7 @@ class SchemaGenerator:
   def read_and_parse_csv(self, input_csv_file,
             include_text_columns = DEFAULT_INCLUDE_TEXT, skip_columns = None,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
+            num_bins = DEFAULT_NUM_BINS,
             include_na = DEFAULT_INCLUDE_NA,
             categorical_columns = None,
             geographical_columns = None):
@@ -89,15 +91,17 @@ class SchemaGenerator:
     :param include_text_columns: whether or not to include columns that have a kind of "text" (non-categorical string fields)
     :type include_text_columns: bool
     :param skip_columns: a list of names of columns to skip completely
-    :type include_na: list
+    :type skip_columns: list
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
     :type max_values_for_categorical: number
+    :param num_bins: informational value to include in the output schema to indicate how many 'bins' should be used for numeric values
+    :type num_bins: number
     :param include_na: whether or not to include ``NaN`` as a value for categorical fields
     :type include_na: bool
     :param categorical_columns: a list of names of columns to always treat as categorical, regardless of number of values
-    :type include_na: list
+    :type categorical_columns: list
     :param geographical_columns: a list of names of columns to always treat as geographical (and therefore categorical), regardless of number of values
-    :type include_na: list
+    :type geographical_columns: list
 
     :return: whether or not the loading was successful
     :rtype: bool
@@ -129,10 +133,16 @@ class SchemaGenerator:
     try:
       # Do the processing needed to generate the schema
       (self.output_schema, self.output_datatypes) = \
-            self._build_schema(self.input_data_as_dataframe,
-                include_text_columns, skip_columns,
-                max_values_for_categorical, include_na,
-                categorical_columns, geographical_columns)
+            self._build_schema(
+                self.input_data_as_dataframe,
+                include_text_columns=include_text_columns,
+                skip_columns=skip_columns,
+                max_values_for_categorical=max_values_for_categorical,
+                num_bins=num_bins,
+                include_na=include_na,
+                categorical_columns=categorical_columns,
+                geographical_columns=geographical_columns
+            )
     except: # Logging the full exception... pylint: disable=bare-except
       # Re-clear these variables to make sure nothing is in a half-loaded state
       self._clear_class_variables()
@@ -315,6 +325,7 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
   def _build_schema(self, input_data_as_dataframe,
             include_text_columns = DEFAULT_INCLUDE_TEXT, skip_columns = None,
             max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
+            num_bins = DEFAULT_NUM_BINS,
             include_na = DEFAULT_INCLUDE_NA,
             categorical_columns = None,
             geographical_columns = None):
@@ -345,6 +356,8 @@ parse the input file using 'pandas.read_csv()'.", input_csv_file)
     :param skip_columns: a list of names of columns to skip completely
     :type include_na: list
     :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
+    :type num_bins: number
+    :param num_bins: informational value to include in the output schema to indicate how many 'bins' should be used for numeric values
     :type max_values_for_categorical: number
     :param include_na: whether or not to include ``NaN`` as a value for categorical fields
     :type include_na: bool
@@ -442,6 +455,7 @@ unique values for it. This column will be labeled as a \
           col_schema["kind"] = "numeric"
           col_schema["min"] = min_value
           col_schema["max"] = max_value
+          col_schema["bins"] = num_bins
 
       output_schema["schema"][column] = col_schema
       # Also add this column and its datatype to the output_datatypes dict
