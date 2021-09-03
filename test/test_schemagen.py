@@ -73,8 +73,8 @@ VALID_TEST_SCHEMA = {
     "B": {
       "dtype": "uint32",
       "kind": "numeric",
-      "min": 999997,
-      "max": 1000052,
+      "min": 1000000,
+      "max": 1000049,
       "bins": 10
     },
     "C": {
@@ -297,24 +297,24 @@ class TestSchemaGenerator(unittest.TestCase):
 
     series = pd.Series([1, 2, 2, 3, 4, 5, 6, 7, 8, 9])
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
-        ("uint8", 0, 10))
+        ("uint8", 1, 9))
 
     series = pd.Series(list(range(1000000, 1000050, 1)))
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
-        ("uint32", 999997, 1000052))
+        ("uint32", 1000000, 1000049))
 
     series = pd.Series([0.1, 0.15, 0.2, 0.214, 0.25])
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
-        ("float", 0.0925, 0.2575))
+        ("float", 0.1, 0.25))
 
     series = pd.Series([-1, 0, 1, -2, 0, -3])
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
-        ("int8", -4, 2))
+        ("int8", -3, 1))
 
     # If min is 0, don't "fuzz" it, to avoid going negative
     series = pd.Series([0, 1, 2, 3, 4, 5])
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
-        ("uint8", 0, 6))
+        ("uint8", 0, 5))
 
     series = pd.Series(["2021-02-25", "2021-01-05", "2021-06-22"])
     self.assertEqual(schema_generator._get_series_dtype(series), # We want to test private methods... pylint: disable=protected-access
