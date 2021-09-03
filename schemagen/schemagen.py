@@ -466,7 +466,7 @@ unique values for it. This column will be labeled as a \
     return (output_schema, output_datatypes)
 
 
-  def _get_series_dtype(self, series):
+  def _get_series_dtype(self, series, fuzz_min_max=False):
     # Allow long lines in docs, because params. pylint: disable=line-too-long
     """
     Determine the datatype that we want to put into our schema files. This isn't
@@ -476,6 +476,8 @@ unique values for it. This column will be labeled as a \
 
     :param: series a pandas series to examine
     :type: pandas.series
+    :param: fuzz_min_max whether or not to adjust the min/max values for numeric by a percentage; defaults to False
+    :type: boolean
 
     :return: a tuple containing the string version of the datatype to use and, if relevant, min and max values
     :rtype: str
@@ -499,16 +501,17 @@ unique values for it. This column will be labeled as a \
       min_value = series.min().item()
       max_value = series.max().item()
 
-      # Given these min and max values, "fuzz" them a little bit
-      # by adding / subtracting 5% of the difference between the two
-      # (rounded to the nearest int, because this is an int)
-      padding_margin = math.ceil((max_value - min_value) *
+      if fuzz_min_max:
+        # Given these min and max values, "fuzz" them a little bit
+        # by adding / subtracting 5% of the difference between the two
+        # (rounded to the nearest int, because this is an int)
+        padding_margin = math.ceil((max_value - min_value) *
               DEFAULT_PADDING_PERCENTAGE)
-      # Don't fuzz if min_value is equal to zero, because we'd unexpectedly
-      # be going negative on it
-      if min_value != 0:
-        min_value = min_value - padding_margin
-      max_value = max_value + padding_margin
+        # Don't fuzz if min_value is equal to zero, because we'd unexpectedly
+        # be going negative on it
+        if min_value != 0:
+          min_value = min_value - padding_margin
+        max_value = max_value + padding_margin
 
       # Now determine the smallest type that will work for both the min
       # and the max value.
@@ -538,11 +541,12 @@ unique values for it. This column will be labeled as a \
       min_value = series.min().item()
       max_value = series.max().item()
 
-      # Given these min and max values, "fuzz" them a little bit
-      # by adding / subtracting 5% of the difference between the two
-      padding_margin = (max_value - min_value) * DEFAULT_PADDING_PERCENTAGE
-      min_value = min_value - padding_margin
-      max_value = max_value + padding_margin
+      if fuzz_min_max:
+        # Given these min and max values, "fuzz" them a little bit
+        # by adding / subtracting 5% of the difference between the two
+        padding_margin = (max_value - min_value) * DEFAULT_PADDING_PERCENTAGE
+        min_value = min_value - padding_margin
+        max_value = max_value + padding_margin
 
     else:
       # See if we can parse it as a date

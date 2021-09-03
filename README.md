@@ -256,8 +256,8 @@ instance, if the values present in the CSV are `M`, `F`, `O`, the `dtype` will b
 `str`, the `values` array will be `{ "M", "F", "O" }`, and the `codes` array will
 be `{ 1, 2, 3 }`.
 * `min`, `max`, and `bins` (only when `kind` is `numeric` or `date`):
-The `min` value and the `max` value are the adjusted range of the values, and are
-slightly smaller and larger (respectively) than the range specified in the source CSV.
+The `min` value and the `max` value represent the range of the values.
+(TODO: Optionally, these can be slightly smaller and larger (respectively) than the range specified in the source CSV.)
 The `bins` number is a recommendation for the number of bins into which to divide
 the values during processing, and is informational only. The number of bins can be
 specified on the command line and is a constant for all columns (it is not inferred
