@@ -152,6 +152,70 @@ class SchemaGenerator:
 
     return True
 
+  def parse_dataframe(self, input_dataframe,
+            include_text_columns = DEFAULT_INCLUDE_TEXT, skip_columns = None,
+            max_values_for_categorical = DEFAULT_MAX_VALUES_FOR_CATEGORICAL,
+            num_bins = DEFAULT_NUM_BINS,
+            include_na = DEFAULT_INCLUDE_NA,
+            categorical_columns = None,
+            geographical_columns = None):
+    # Allow long lines in docs, because params. pylint: disable=line-too-long
+    """This method will attempt to infer a schema from an already-loaded
+    dataframe. If the SchemaGenerator has already been used to
+    generate a schema from a different input file, this method will clear
+    out the previous schema (even if it encounters an error when
+    reading in a new file). (If it is desirable to keep multiple schemae,
+    a different SchemaGenerator should be used for each input file.)
+
+    Error-handling: This method will trap and log exceptions directly,
+    and return a simple bool indicating success or failure.
+
+    :param input_dataframe: the dataframe that has already been loaded in
+    :type input_dataframe: pandas.DataFrame
+    :param include_text_columns: whether or not to include columns that have a kind of "text" (non-categorical string fields)
+    :type include_text_columns: bool
+    :param skip_columns: a list of names of columns to skip completely
+    :type skip_columns: list
+    :param max_values_for_categorical: columns with fewer than this many values will be considered categorical
+    :type max_values_for_categorical: number
+    :param num_bins: informational value to include in the output schema to indicate how many 'bins' should be used for numeric values
+    :type num_bins: number
+    :param include_na: whether or not to include ``NaN`` as a value for categorical fields
+    :type include_na: bool
+    :param categorical_columns: a list of names of columns to always treat as categorical, regardless of number of values
+    :type categorical_columns: list
+    :param geographical_columns: a list of names of columns to always treat as geographical (and therefore categorical), regardless of number of values
+    :type geographical_columns: list
+
+    :return: whether or not the parsing was successful
+    :rtype: bool
+
+    """
+    self._clear_class_variables()
+    self.input_data_as_dataframe = input_dataframe
+
+    try:
+      # Do the processing needed to generate the schema
+      (self.output_schema, self.output_datatypes) = \
+            self._build_schema(
+                self.input_data_as_dataframe,
+                include_text_columns=include_text_columns,
+                skip_columns=skip_columns,
+                max_values_for_categorical=max_values_for_categorical,
+                num_bins=num_bins,
+                include_na=include_na,
+                categorical_columns=categorical_columns,
+                geographical_columns=geographical_columns
+            )
+    except: # Logging the full exception... pylint: disable=bare-except
+      # Re-clear these variables to make sure nothing is in a half-loaded state
+      self._clear_class_variables()
+
+      self.log.exception("Caught an error when trying to parse schema:" )
+      return False
+
+    return True
+
   def get_parameters_json(self):
     # Allow long lines in docs, because URLs. pylint: disable=line-too-long
     """Returns the content that would be written to the ``parameters.json`` file
