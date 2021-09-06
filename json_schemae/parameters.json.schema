@@ -13,7 +13,7 @@
                                 "str", "float", "date"]
                      },
             "kind": { "enum": ["categorical", "geographical",
-                               "numeric", "text", "date"] },
+                               "numeric", "text", "date", "id"] },
             "values": { "type": "array" },
             "codes": { "type": "array", "items": { "type": "integer" } },
             "min": { 

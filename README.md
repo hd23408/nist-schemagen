@@ -71,7 +71,8 @@ C-9725,87,2020-12-31,TX
       "dtype": "uint8",
       "kind": "numeric",
       "min": 14,
-      "max": 87
+      "max": 87,
+      "bins": 10
     },
     "Date": {
       "dtype": "date",
@@ -247,6 +248,8 @@ double-checked for accuracy, as the parsing attempt is inexact.
 considered to be `text` if it contains more than `max_categorical` possible values
 and the values are non-numeric and not parsable as dates (ref. the 
 `--include_text_columns` command-line argument).
+    * `id`: The schema generator will never mark anything as an `id` kind of column,
+but it is valid to give a particular column a kind of `id` manually.
 * `values` and `codes` (only when `kind` is `categorical` or `geographic`): Two arrays
 containing the actual values present in the input CSV, as well as an integer code
 that can be used when processing the data. Note that for situations where the `values`
