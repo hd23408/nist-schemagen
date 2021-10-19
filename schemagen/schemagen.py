@@ -500,7 +500,9 @@ values. Will include them without sorting.")
         # Not categorical data
         if col_schema["dtype"] == "str":
           if not include_text_columns:
-            self.log.warning("Skipping '%s' because it is freetext", column)
+            self.log.warning("Skipping '%s' because it is freetext. If you \
+need this column, consider using the '-m' option to increase the size of \
+categorical variables, or include text columns using the '-t' option.", column)
             col_schema = None
             continue
 
@@ -602,8 +604,8 @@ unique values for it. This column will be labeled as a \
     elif series.dtype.kind in ['f', 'c']: # pylint: disable=inconsistent-quotes
       # numpy dtypes will be `float32`/`float64`, but we just want `float`.
       datatype = "float"
-      min_value = series.min().item()
-      max_value = series.max().item()
+      min_value = series.min()
+      max_value = series.max()
 
       if fuzz_min_max:
         # Given these min and max values, "fuzz" them a little bit
