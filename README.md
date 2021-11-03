@@ -11,6 +11,11 @@ This tool assumes that the schema is learnable from the input dataset, and
 specifically that all categorical values are included in the input (and
 therefore can be inferred by this tool).
 
+Additionally, by default this tool does not automatically pad or otherwise
+adjust min/max values for categorical ranges (it uses the actual min/max
+values that are in the data), so in order to fully protect privacy those should
+be reviewed and adjusted as needed direction in the resultant JSON file.
+
 Note that this approach of taking the schema from the input data is generally
 considered to be "cheating" when it comes to differential privacy! However,
 in a real world context and when attempting to make something that's as easy
